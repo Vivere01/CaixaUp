@@ -44,35 +44,43 @@ export async function updateSession(request: NextRequest) {
 
     // Check if onboarding is needed
     if (user && !pathname.startsWith('/onboarding')) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user.id)
-        .single()
+      try {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('company_id')
+          .eq('id', user.id)
+          .single()
 
-      if (!profile?.company_id) {
-        const url = request.nextUrl.clone()
-        url.pathname = '/onboarding'
-        return NextResponse.redirect(url)
+        if (!error && !profile?.company_id) {
+          const url = request.nextUrl.clone()
+          url.pathname = '/onboarding'
+          return NextResponse.redirect(url)
+        }
+      } catch (e) {
+        console.error('Middleware profile check error:', e)
       }
     }
   }
 
   // Redirect to dashboard/onboarding if logged in and accessing login/signup
   if (user && (pathname.startsWith('/login') || pathname.startsWith('/signup'))) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('company_id')
-      .eq('id', user.id)
-      .single()
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('company_id')
+        .eq('id', user.id)
+        .single()
 
-    const url = request.nextUrl.clone()
-    if (profile?.company_id) {
-      url.pathname = '/dashboard'
-    } else {
-      url.pathname = '/onboarding'
+      const url = request.nextUrl.clone()
+      if (profile?.company_id) {
+        url.pathname = '/dashboard'
+      } else {
+        url.pathname = '/onboarding'
+      }
+      return NextResponse.redirect(url)
+    } catch (e) {
+      console.error('Middleware auth redirect error:', e)
     }
-    return NextResponse.redirect(url)
   }
 
   return supabaseResponse
