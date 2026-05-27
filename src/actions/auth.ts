@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/utils/supabase/server'
+import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
 export interface ActionState {
@@ -93,6 +93,8 @@ export async function createCompany(state: ActionState, formData: FormData): Pro
     return { error: 'Usuário não autenticado.' }
   }
 
+  const adminClient = await createAdminClient()
+
   // Generate unique slug
   let slug = companyName
     .toLowerCase()
@@ -103,7 +105,7 @@ export async function createCompany(state: ActionState, formData: FormData): Pro
     .replace(/^-+|-+$/g, '')
 
   // Append random string to slug if conflicts occur, but let's do normal insertion first
-  const { data: company, error: companyError } = await supabase
+  const { data: company, error: companyError } = await adminClient
     .from('companies')
     .insert({
       name: companyName,
@@ -117,7 +119,7 @@ export async function createCompany(state: ActionState, formData: FormData): Pro
     if (companyError.code === '23505') {
       const rand = Math.floor(1000 + Math.random() * 9000).toString()
       slug = `${slug}-${rand}`
-      const { data: retryCompany, error: retryError } = await supabase
+      const { data: retryCompany, error: retryError } = await adminClient
         .from('companies')
         .insert({
           name: companyName,
@@ -129,7 +131,7 @@ export async function createCompany(state: ActionState, formData: FormData): Pro
       if (retryError) return { error: retryError.message }
       
       // Update profile
-      const { error: profileError } = await supabase
+      const { error: profileError } = await adminClient
         .from('profiles')
         .update({
           company_id: retryCompany.id,
@@ -144,7 +146,7 @@ export async function createCompany(state: ActionState, formData: FormData): Pro
   }
 
   // Update profile with company_id and role = 'admin'
-  const { error: profileError } = await supabase
+  const { error: profileError } = await adminClient
     .from('profiles')
     .update({
       company_id: company.id,
