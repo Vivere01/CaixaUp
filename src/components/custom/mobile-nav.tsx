@@ -32,11 +32,11 @@ export function MobileNav({ companyName, userName }: MobileNavProps) {
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
+        <DialogTrigger render={
           <button className="p-2 text-on-surface">
             <span className="material-symbols-outlined text-[28px]">menu</span>
           </button>
-        </DialogTrigger>
+        } />
         <DialogContent 
           showCloseButton={false}
           className="fixed inset-y-0 left-0 z-50 h-full w-[280px] border-none bg-white p-0 shadow-2xl transition-transform duration-300 ease-in-out data-[state=closed]:-translate-x-full data-[state=open]:translate-x-0 translate-y-0 top-0 sm:max-w-none rounded-none"

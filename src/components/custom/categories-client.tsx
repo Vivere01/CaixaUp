@@ -170,12 +170,12 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
         </div>
 
         <Dialog open={isAddOpen} onOpenChange={(val) => { setIsAddOpen(val); if(!val) resetForm(); }}>
-          <DialogTrigger asChild>
+          <DialogTrigger render={
             <button className="w-full sm:w-auto bg-primary text-on-primary font-bold px-6 py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:bg-primary-container transition-all active:scale-95 shadow-lg shadow-primary/20">
               <span className="material-symbols-outlined text-[20px]">add_circle</span>
               <span>Nova Categoria</span>
             </button>
-          </DialogTrigger>
+          } />
           
           <DialogContent className="bg-white border-none max-w-md rounded-3xl md:rounded-[2.5rem] p-0 overflow-hidden shadow-2xl">
             <form onSubmit={handleAddSubmit}>

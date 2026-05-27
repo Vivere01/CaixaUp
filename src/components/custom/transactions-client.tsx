@@ -126,12 +126,12 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
         </div>
 
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-          <DialogTrigger asChild>
+          <DialogTrigger render={
             <button className="w-full sm:w-auto bg-primary text-on-primary font-bold px-6 py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:bg-primary-container transition-all active:scale-95 shadow-lg shadow-primary/20">
               <span className="material-symbols-outlined text-[20px]">add_circle</span>
               <span>Novo Lançamento</span>
             </button>
-          </DialogTrigger>
+          } />
           <DialogContent className="max-w-md rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 shadow-2xl border-none">
             <form onSubmit={handleAddSubmit} className="space-y-6">
               <DialogHeader>
