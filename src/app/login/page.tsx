@@ -15,14 +15,6 @@ const initialState = {
 export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(login, initialState)
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    startTransition(() => {
-      formAction(formData)
-    })
-  }
-
   return (
     <div className="min-h-screen bg-slate-950 flex font-sans antialiased text-white">
       {/* Brand Side (Left) - Hidden on Mobile */}
@@ -102,9 +94,9 @@ export default function LoginPage() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form action={formAction} className="space-y-6">
             {state?.error && (
-              <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm font-medium">
+              <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm font-medium animate-in fade-in slide-in-from-top-2 duration-300">
                 {state.error}
               </div>
             )}
