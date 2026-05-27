@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { 
   ArrowRight, 
   TrendingUp, 
@@ -14,459 +15,290 @@ import {
   Zap, 
   CheckCircle2, 
   Receipt,
-  FileCheck
+  FileCheck,
+  ChevronRight
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-export default function LandingPage() {
-  return (
-    <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-emerald-400 selection:text-slate-900 overflow-x-hidden">
-      {/* Decorative Glow Elements */}
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-emerald-500/5 blur-[140px] pointer-events-none" />
-      <div className="absolute top-[40%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/5 blur-[130px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] rounded-full bg-indigo-500/5 blur-[150px] pointer-events-none" />
+const fadeIn = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+}
 
-      {/* Header / Navbar */}
-      <header className="sticky top-0 z-50 bg-slate-950/70 backdrop-blur-md border-b border-slate-900 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-emerald-400 to-blue-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-              <span className="font-extrabold text-lg text-slate-950">C</span>
+const stagger = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+}
+
+export default function LandingPage() {
+  const { scrollYProgress } = useScroll()
+  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
+  const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95])
+
+  return (
+    <div className="min-h-screen bg-[#000] text-white font-sans selection:bg-emerald-400 selection:text-slate-900 overflow-x-hidden">
+      {/* Dynamic Background */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-500/10 blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] rounded-full bg-blue-500/10 blur-[100px]" />
+      </div>
+
+      {/* Header / Apple Style Navbar */}
+      <motion.header 
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className="fixed top-0 left-0 right-0 z-50 bg-black/70 backdrop-blur-xl border-b border-white/5 px-6 py-3"
+      >
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2 group cursor-pointer">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-emerald-400 to-blue-500 flex items-center justify-center transition-transform group-hover:scale-110">
+              <span className="font-black text-sm text-black">C</span>
             </div>
-            <span className="font-bold text-xl tracking-tight">
+            <span className="font-bold text-lg tracking-tight">
               Caixa<span className="text-emerald-400">Up</span>
             </span>
           </div>
 
-          <nav className="hidden md:flex items-center gap-8 text-sm text-slate-400 font-medium">
-            <a href="#features" className="hover:text-white transition">Funcionalidades</a>
-            <a href="#how-it-works" className="hover:text-white transition">Como Funciona</a>
-            <a href="#dashboard-preview" className="hover:text-white transition">DRE Inteligente</a>
-            <a href="#pricing" className="hover:text-white transition">Planos</a>
+          <nav className="hidden md:flex items-center gap-8 text-[13px] text-white/60 font-medium">
+            {['Funcionalidades', 'Como Funciona', 'DRE', 'Planos'].map((item) => (
+              <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="hover:text-white transition-colors">
+                {item}
+              </a>
+            ))}
           </nav>
 
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm font-semibold text-slate-350 hover:text-white transition">
+          <div className="flex items-center gap-6">
+            <Link href="/login" className="text-[13px] font-medium text-white/60 hover:text-white transition-colors">
               Entrar
             </Link>
             <Link href="/signup">
-              <Button size="sm" className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-xl transition shadow-lg shadow-emerald-500/10">
-                Criar Conta
+              <Button size="sm" className="bg-white text-black hover:bg-white/90 text-[13px] font-bold px-4 py-1.5 rounded-full transition-all">
+                Começar
               </Button>
             </Link>
           </div>
         </div>
-      </header>
+      </motion.header>
 
-      {/* Hero Section */}
-      <section className="relative pt-20 pb-24 px-6 text-center">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold shadow-sm animate-pulse">
-            <Zap className="h-3.5 w-3.5" />
-            <span>Feito para empresários brasileiros</span>
-          </div>
+      {/* Hero Section - The "Antigravity" Experience */}
+      <section className="relative pt-40 pb-32 px-6 flex flex-col items-center text-center z-10">
+        <motion.div 
+          style={{ opacity, scale }}
+          className="max-w-4xl mx-auto space-y-8"
+        >
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/5 border border-emerald-500/10 text-emerald-400 text-[12px] font-bold tracking-wide uppercase"
+          >
+            <Zap className="h-3 w-3" />
+            <span>Finanças sem fricção</span>
+          </motion.div>
 
-          <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight md:leading-none">
-            A clareza financeira que seu negócio <br />
-            <span className="bg-gradient-to-r from-emerald-400 via-teal-350 to-blue-500 bg-clip-text text-transparent">
-              realmente precisa.
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] text-white"
+          >
+            Decisões baseadas <br />
+            <span className="bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">
+              em clareza absoluta.
             </span>
-          </h1>
+          </motion.h1>
 
-          <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            Esqueça planilhas complicadas de Excel ou ERPs antigos. Visualize o DRE do seu negócio, controle as margens de lucro e tome decisões sem dor de cabeça.
-          </p>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-white/40 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed"
+          >
+            Substitua planilhas arcaicas por uma interface pensada para o crescimento. Controle margens, DRE e fluxo de caixa com o design que seu negócio merece.
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6"
+          >
             <Link href="/signup" className="w-full sm:w-auto">
-              <Button className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold px-8 py-7 rounded-xl text-lg transition shadow-xl shadow-emerald-500/10 flex items-center justify-center gap-2">
-                Experimentar Grátis
+              <Button className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-black font-black px-10 py-7 rounded-2xl text-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
+                Experimentar Agora
                 <ArrowRight className="h-5 w-5" />
               </Button>
             </Link>
-            <a href="#dashboard-preview" className="w-full sm:w-auto">
-              <Button variant="outline" className="w-full sm:w-auto border-slate-800 hover:bg-slate-900 text-slate-300 hover:text-white px-8 py-7 rounded-xl text-lg transition">
-                Ver Demo
-              </Button>
+            <a href="#dashboard-preview" className="group flex items-center gap-2 text-white font-bold hover:text-emerald-400 transition-colors">
+              Ver demonstração
+              <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </a>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
 
-      {/* Dashboard Preview Simulator */}
-      <section id="dashboard-preview" className="px-6 pb-28">
-        <div className="max-w-6xl mx-auto bg-slate-900/40 border border-slate-800 rounded-3xl p-4 md:p-8 shadow-3xl relative overflow-hidden backdrop-blur-md">
-          {/* Top title bar */}
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-slate-800 mb-8">
-            <div>
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-widest block">Dashboard Demo</span>
-              <h2 className="text-2xl font-bold mt-1">CaixaUp Analytics</h2>
-            </div>
-            <div className="flex gap-2">
-              <span className="bg-emerald-500/10 text-emerald-400 px-3 py-1 text-xs rounded-lg font-semibold border border-emerald-500/20">
-                Ativo
-              </span>
-              <span className="bg-slate-800 text-slate-300 px-3 py-1 text-xs rounded-lg font-semibold">
-                Maio 2026
-              </span>
-            </div>
-          </div>
-
-          {/* Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div className="bg-slate-950 border border-slate-850 p-5 rounded-2xl">
-              <div className="flex justify-between items-center text-slate-500 text-xs font-bold uppercase tracking-wider">
-                <span>Faturamento bruto</span>
-                <TrendingUp className="h-4 w-4 text-emerald-400" />
-              </div>
-              <p className="text-2xl font-extrabold mt-2">R$ 124.500,00</p>
-              <span className="text-[10px] text-emerald-400 mt-1 block">+12% comparado ao mês anterior</span>
-            </div>
-
-            <div className="bg-slate-950 border border-slate-850 p-5 rounded-2xl">
-              <div className="flex justify-between items-center text-slate-500 text-xs font-bold uppercase tracking-wider">
-                <span>Total de custos</span>
-                <Receipt className="h-4 w-4 text-orange-400" />
-              </div>
-              <p className="text-2xl font-extrabold mt-2">R$ 48.200,00</p>
-              <span className="text-[10px] text-slate-500 mt-1 block">Custos variáveis e operacionais</span>
-            </div>
-
-            <div className="bg-slate-950 border border-slate-850 p-5 rounded-2xl">
-              <div className="flex justify-between items-center text-slate-500 text-xs font-bold uppercase tracking-wider">
-                <span>Margem Operacional</span>
-                <PieChart className="h-4 w-4 text-blue-400" />
-              </div>
-              <p className="text-2xl font-extrabold mt-2">61.2%</p>
-              <span className="text-[10px] text-blue-400 mt-1 block">Altamente saudável</span>
-            </div>
-
-            <div className="bg-slate-950 border border-slate-850 p-5 rounded-2xl">
-              <div className="flex justify-between items-center text-slate-500 text-xs font-bold uppercase tracking-wider">
-                <span>Lucro Líquido</span>
-                <FileCheck className="h-4 w-4 text-emerald-400" />
-              </div>
-              <p className="text-2xl font-extrabold mt-2">R$ 76.300,00</p>
-              <span className="text-[10px] text-emerald-400 mt-1 block">Disponível para caixa</span>
-            </div>
-          </div>
-
-          {/* DRE simulation area */}
-          <div className="bg-slate-950 border border-slate-850 rounded-2xl p-6">
-            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-              <LineChart className="h-5 w-5 text-emerald-400" />
-              Demonstração do Resultado do Exercício (DRE) Simplificado
-            </h3>
+      {/* Product Showcase - Floating UI Elements */}
+      <section id="dashboard-preview" className="px-6 py-20 relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 100 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+          className="max-w-5xl mx-auto"
+        >
+          <div className="bg-[#111] border border-white/10 rounded-[2.5rem] p-4 md:p-12 shadow-3xl overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between py-2 border-b border-slate-900 text-slate-350">
-                <span>(+) Receita Bruta (Vendas e Serviços)</span>
-                <span className="font-semibold text-white">R$ 124.500,00</span>
+            {/* Mock Dashboard Header */}
+            <div className="flex items-center justify-between mb-12 border-b border-white/5 pb-8">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">Visão Geral</p>
+                <h2 className="text-3xl font-bold">Analytics de Luxo</h2>
               </div>
-              <div className="flex justify-between py-2 border-b border-slate-900 text-slate-450">
-                <span>(-) Deduções de impostos</span>
-                <span className="font-semibold text-red-400">- R$ 7.470,00</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-slate-900 text-slate-350 font-medium">
-                <span>(=) Receita Líquida</span>
-                <span className="font-semibold text-white">R$ 117.030,00</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-slate-900 text-slate-450">
-                <span>(-) Custos Variáveis (Fornecedores e Logística)</span>
-                <span className="font-semibold text-red-400">- R$ 40.730,00</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-slate-900 text-slate-350 font-bold">
-                <span>(=) Lucro Bruto</span>
-                <span className="font-bold text-emerald-400">R$ 76.300,00</span>
+              <div className="h-10 w-10 rounded-full border border-white/10 flex items-center justify-center">
+                <Activity className="h-4 w-4 text-emerald-400" />
               </div>
             </div>
-            
-            {/* Human Summary Box */}
-            <div className="mt-6 p-4 rounded-xl bg-slate-900 border border-slate-800 flex items-start gap-3">
-              <div className="h-6 w-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold mt-0.5">
-                ★
-              </div>
-              <div className="text-xs text-slate-400 leading-relaxed">
-                <span className="font-bold text-white block mb-0.5">Resumo em Linguagem Humana:</span>
-                Sua empresa faturou muito bem este mês e a margem de contribuição foi de 61.2%. O maior peso de gastos foi em Fornecedores. Você tem espaço seguro para reinvestir ou retirar lucros.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Features Grid */}
-      <section id="features" className="py-24 px-6 border-t border-slate-900 bg-slate-900/10 relative">
-        <div className="max-w-7xl mx-auto space-y-16">
-          <div className="text-center space-y-4 max-w-xl mx-auto">
-            <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">Controle Total</span>
-            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">O que o CaixaUp entrega</h2>
-            <p className="text-slate-400">
-              Elimine o trabalho manual e simplifique a leitura dos dados para você focar no que importa: crescer o seu negócio.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-slate-900/50 border border-slate-850 p-8 rounded-3xl shadow-xl hover:border-slate-800 transition group space-y-4">
-              <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center group-hover:scale-110 transition">
-                <FileSpreadsheet className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold">Importação Inteligente</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Importe faturas e extratos em formato CSV ou XLSX com mapeamento de colunas automático e inteligente.
-              </p>
+            {/* Floating KPI Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              {[
+                { label: 'Faturamento', value: 'R$ 124.500', trend: '+12%', color: 'text-emerald-400' },
+                { label: 'Custos', value: 'R$ 48.200', trend: '-2%', color: 'text-white/60' },
+                { label: 'Margem', value: '61.2%', trend: 'Saudável', color: 'text-blue-400' },
+              ].map((kpi, i) => (
+                <motion.div 
+                  key={i}
+                  whileHover={{ y: -5 }}
+                  className="bg-white/5 border border-white/5 p-6 rounded-3xl backdrop-blur-sm"
+                >
+                  <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest">{kpi.label}</p>
+                  <p className={`text-3xl font-black mt-2 ${kpi.color}`}>{kpi.value}</p>
+                  <span className="text-[10px] font-bold mt-2 block opacity-40">{kpi.trend} este mês</span>
+                </motion.div>
+              ))}
             </div>
 
-            <div className="bg-slate-900/50 border border-slate-850 p-8 rounded-3xl shadow-xl hover:border-slate-800 transition group space-y-4">
-              <div className="w-12 h-12 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center group-hover:scale-110 transition">
-                <LineChart className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold">DRE Automático</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Esqueça fechamentos demorados no final do mês. Veja seus demonstrativos de resultado atualizados em tempo real.
-              </p>
-            </div>
-
-            <div className="bg-slate-900/50 border border-slate-850 p-8 rounded-3xl shadow-xl hover:border-slate-800 transition group space-y-4">
-              <div className="w-12 h-12 bg-purple-500/10 border border-purple-500/20 text-purple-400 rounded-2xl flex items-center justify-center group-hover:scale-110 transition">
-                <PieChart className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold">Margem & Contribuição</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Descubra a lucratividade real dos seus serviços ou produtos com divisão por categorias customizáveis.
-              </p>
-            </div>
-
-            <div className="bg-slate-900/50 border border-slate-850 p-8 rounded-3xl shadow-xl hover:border-slate-800 transition group space-y-4">
-              <div className="w-12 h-12 bg-orange-500/10 border border-orange-500/20 text-orange-400 rounded-2xl flex items-center justify-center group-hover:scale-110 transition">
-                <Users className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold">Desenvolvido com Contadores</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                O CaixaUp pode ser compartilhado com seu escritório contábil, agilizando a exportação de relatórios.
-              </p>
-            </div>
-
-            <div className="bg-slate-900/50 border border-slate-850 p-8 rounded-3xl shadow-xl hover:border-slate-800 transition group space-y-4">
-              <div className="w-12 h-12 bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 rounded-2xl flex items-center justify-center group-hover:scale-110 transition">
-                <Shield className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold">Isolamento Multi-Tenant</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Seus dados financeiros protegidos por criptografia e políticas de Row Level Security (RLS) no banco de dados.
-              </p>
-            </div>
-
-            <div className="bg-slate-900/50 border border-slate-850 p-8 rounded-3xl shadow-xl hover:border-slate-800 transition group space-y-4">
-              <div className="w-12 h-12 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 rounded-2xl flex items-center justify-center group-hover:scale-110 transition">
-                <Cpu className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold">Insights Inteligentes</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Avisos automáticos sobre gastos fora do padrão, queda em margens operacionais e projeções de fluxo de caixa.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How it Works */}
-      <section id="how-it-works" className="py-24 px-6 border-t border-slate-900">
-        <div className="max-w-6xl mx-auto space-y-16">
-          <div className="text-center space-y-4 max-w-xl mx-auto">
-            <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">Simplicidade</span>
-            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">Onboarding em 3 passos</h2>
-            <p className="text-slate-400">Sem processos de implantação longos ou ligações de suporte demoradas.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-            <div className="space-y-4 relative">
-              <span className="text-6xl font-extrabold text-slate-850 absolute top-[-30px] left-0 pointer-events-none select-none">01</span>
-              <h3 className="text-xl font-bold pt-4 relative z-10">Crie seu cadastro</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Preencha os dados básicos do seu negócio e ative seu espaço de trabalho em segundos.
-              </p>
-            </div>
-            <div className="space-y-4 relative">
-              <span className="text-6xl font-extrabold text-slate-850 absolute top-[-30px] left-0 pointer-events-none select-none">02</span>
-              <h3 className="text-xl font-bold pt-4 relative z-10">Importe seu Extrato</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Arraste e solte o arquivo CSV/XLSX exportado pelo seu banco comercial (ou cadastre transações manualmente).
-              </p>
-            </div>
-            <div className="space-y-4 relative">
-              <span className="text-6xl font-extrabold text-slate-850 absolute top-[-30px] left-0 pointer-events-none select-none">03</span>
-              <h3 className="text-xl font-bold pt-4 relative z-10">Veja seus Resultados</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Visualize seu DRE, margens e receitas organizadas por categorias prontas e fáceis de analisar.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="py-24 px-6 border-t border-slate-900 bg-slate-900/10">
-        <div className="max-w-6xl mx-auto space-y-16">
-          <div className="text-center space-y-4 max-w-xl mx-auto">
-            <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">Planos Flexíveis</span>
-            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">Investimento no seu Lucro</h2>
-            <p className="text-slate-400">Escolha o plano ideal para a escala de faturamento da sua empresa.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Plan 1 */}
-            <div className="bg-slate-950 border border-slate-850 p-8 rounded-3xl flex flex-col justify-between shadow-lg relative">
-              <div className="space-y-4">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Empresário</span>
-                <h3 className="text-2xl font-bold">Essencial</h3>
-                <p className="text-slate-400 text-xs">Ideal para autônomos e pequenas empresas iniciais.</p>
-                <div className="pt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold">R$ 97</span>
-                  <span className="text-slate-500 text-xs">/mês</span>
-                </div>
-                <div className="pt-6 space-y-3">
-                  <div className="flex items-center gap-2.5 text-xs text-slate-350">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Importação de CSVs</span>
-                  </div>
-                  <div className="flex items-center gap-2.5 text-xs text-slate-350">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Demonstrativo DRE automático</span>
-                  </div>
-                  <div className="flex items-center gap-2.5 text-xs text-slate-350">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Até 1 usuário ativo</span>
-                  </div>
-                </div>
-              </div>
-              <Link href="/signup" className="pt-8">
-                <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white border border-slate-850 py-5 rounded-xl text-sm font-semibold transition">
-                  Começar Plano
-                </Button>
-              </Link>
-            </div>
-
-            {/* Plan 2 - Featured */}
-            <div className="bg-slate-900 border-2 border-emerald-500 p-8 rounded-3xl flex flex-col justify-between shadow-2xl relative">
-              <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-emerald-500 text-slate-950 px-3.5 py-1 text-[10px] font-extrabold uppercase rounded-full tracking-wider">
-                Mais Vendido
+            {/* DRE Mock */}
+            <div className="bg-black/40 rounded-3xl p-8 border border-white/5">
+              <div className="flex items-center gap-3 mb-6">
+                <LineChart className="h-5 w-5 text-emerald-400" />
+                <h3 className="font-bold text-lg">DRE Sintético</h3>
               </div>
               <div className="space-y-4">
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Contador + Empresa</span>
-                <h3 className="text-2xl font-bold">Pro Financeiro</h3>
-                <p className="text-slate-300 text-xs">Perfeito para empresas faturando acima de R$50k/mês.</p>
-                <div className="pt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold text-emerald-400">R$ 197</span>
-                  <span className="text-slate-400 text-xs">/mês</span>
-                </div>
-                <div className="pt-6 space-y-3">
-                  <div className="flex items-center gap-2.5 text-xs text-slate-200">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Todas as ferramentas do Essencial</span>
+                {[
+                  { label: '(+) Receita Bruta', val: 'R$ 124.500', op: 1 },
+                  { label: '(-) Deduções e Impostos', val: 'R$ 7.470', op: 0 },
+                  { label: '(=) Receita Líquida', val: 'R$ 117.030', op: 1 },
+                  { label: '(-) Custos de Mercadoria', val: 'R$ 40.730', op: 0 },
+                  { label: '(=) Lucro Bruto', val: 'R$ 76.300', op: 1, highlight: true },
+                ].map((row, i) => (
+                  <div key={i} className={`flex justify-between py-2 items-center ${row.highlight ? 'pt-4 mt-2 border-t border-white/10' : ''}`}>
+                    <span className={row.highlight ? 'font-black text-white' : 'text-white/40 text-sm'}>{row.label}</span>
+                    <span className={`font-mono text-sm ${row.highlight ? 'text-emerald-400 text-xl font-black' : (row.op ? 'text-white' : 'text-red-400/80')}`}>
+                      {row.val}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2.5 text-xs text-slate-200">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Acesso direto ao seu Contador</span>
-                  </div>
-                  <div className="flex items-center gap-2.5 text-xs text-slate-200">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Até 5 usuários ativos</span>
-                  </div>
-                  <div className="flex items-center gap-2.5 text-xs text-slate-200">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Histórico de relatórios ilimitado</span>
-                  </div>
-                </div>
+                ))}
               </div>
-              <Link href="/signup" className="pt-8">
-                <Button className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-5 rounded-xl text-sm transition shadow-lg shadow-emerald-500/20">
-                  Assinar Agora
-                </Button>
-              </Link>
-            </div>
-
-            {/* Plan 3 */}
-            <div className="bg-slate-950 border border-slate-850 p-8 rounded-3xl flex flex-col justify-between shadow-lg relative">
-              <div className="space-y-4">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Multi-Empresas</span>
-                <h3 className="text-2xl font-bold">Premium</h3>
-                <p className="text-slate-400 text-xs">Ideal para holdings ou empresários com múltiplos CNPJs.</p>
-                <div className="pt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold">R$ 397</span>
-                  <span className="text-slate-500 text-xs">/mês</span>
-                </div>
-                <div className="pt-6 space-y-3">
-                  <div className="flex items-center gap-2.5 text-xs text-slate-350">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Até 3 CNPJs gerenciados</span>
-                  </div>
-                  <div className="flex items-center gap-2.5 text-xs text-slate-350">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Usuários ilimitados</span>
-                  </div>
-                  <div className="flex items-center gap-2.5 text-xs text-slate-350">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Insights preditivos avançados</span>
-                  </div>
-                  <div className="flex items-center gap-2.5 text-xs text-slate-350">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Suporte prioritário via WhatsApp</span>
-                  </div>
-                </div>
-              </div>
-              <Link href="/signup" className="pt-8">
-                <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white border border-slate-850 py-5 rounded-xl text-sm font-semibold transition">
-                  Falar com Consultor
-                </Button>
-              </Link>
             </div>
           </div>
+        </motion.div>
+      </section>
+
+      {/* Features - Apple Grid */}
+      <section id="funcionalidades" className="py-32 px-6 border-t border-white/5">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-24 space-y-4">
+            <motion.h2 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              className="text-4xl md:text-5xl font-black tracking-tight"
+            >
+              Simples. Poderoso. <br />
+              <span className="text-white/40">Feito para vencer.</span>
+            </motion.h2>
+          </div>
+
+          <motion.div 
+            variants={stagger}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {[
+              { icon: FileSpreadsheet, title: 'Importação Veloz', desc: 'Arraste seu extrato bancário e deixe nossa IA categorizar tudo em segundos.', color: 'emerald' },
+              { icon: LineChart, title: 'DRE Automático', desc: 'Chega de esperar o final do mês. Veja seu resultado agora, em tempo real.', color: 'blue' },
+              { icon: PieChart, title: 'Margens Reais', desc: 'Entenda exatamente quanto sobra no seu bolso após cada venda.', color: 'purple' },
+              { icon: Users, title: 'Modo Contador', desc: 'Compartilhe acessos específicos com seu escritório contábil sem burocracia.', color: 'orange' },
+              { icon: Shield, title: 'Segurança Root', desc: 'Isolamento de dados via Row Level Security (RLS). Sua conta, suas regras.', color: 'cyan' },
+              { icon: Cpu, title: 'Insights de Luxo', desc: 'Receba avisos proativos sobre vazamentos de caixa e oportunidades.', color: 'emerald' },
+            ].map((f, i) => (
+              <motion.div 
+                key={i}
+                variants={fadeIn}
+                whileHover={{ y: -10 }}
+                className="bg-[#0a0a0a] border border-white/5 p-10 rounded-[2.5rem] flex flex-col items-start gap-6 hover:border-white/20 transition-colors"
+              >
+                <div className={`w-14 h-14 bg-${f.color}-500/10 rounded-2xl flex items-center justify-center text-${f.color}-400`}>
+                  <f.icon className="h-7 w-7" />
+                </div>
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold">{f.title}</h3>
+                  <p className="text-white/40 text-sm leading-relaxed font-medium">{f.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-32 px-6 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-center relative border-t border-slate-900">
-        <div className="absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 w-[70%] h-[70%] rounded-full bg-emerald-500/5 blur-[150px] pointer-events-none" />
-        
-        <div className="max-w-3xl mx-auto space-y-8 relative z-10">
-          <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-tight">
-            Pare de administrar sua empresa <br />
-            <span className="bg-gradient-to-r from-emerald-400 to-teal-350 bg-clip-text text-transparent">no escuro.</span>
-          </h2>
-          <p className="text-slate-400 text-lg max-w-xl mx-auto leading-relaxed">
-            Seja o mestre do fluxo de caixa e tome decisões embasadas em dados estruturados. Crie sua conta grátis agora.
-          </p>
-          <div className="pt-4">
+      {/* CTA - Final Impact */}
+      <section className="py-40 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-emerald-500/5 blur-[150px] rounded-full scale-150" />
+        <div className="max-w-4xl mx-auto text-center relative z-10 space-y-12">
+          <motion.h2 
+            initial={{ scale: 0.9, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            className="text-5xl md:text-7xl font-black tracking-tighter"
+          >
+            Assuma o controle <br /> 
+            do seu destino.
+          </motion.h2>
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
             <Link href="/signup">
-              <Button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-8 py-7 rounded-xl text-lg transition shadow-xl shadow-emerald-500/20">
-                Criar minha Conta CaixaUp
+              <Button className="bg-white text-black hover:bg-emerald-400 hover:text-black font-black px-12 py-8 rounded-full text-xl transition-all shadow-2xl">
+                Começar agora gratuitamente
               </Button>
             </Link>
-          </div>
+          </motion.div>
+          <p className="text-white/20 text-xs font-bold uppercase tracking-[0.3em]">
+            Segurança Bancária • Suporte Prioritário • Sem Fidelidade
+          </p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-950 py-16 px-6 border-t border-slate-900 text-slate-500 text-xs">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-lg bg-gradient-to-tr from-emerald-400 to-blue-500 flex items-center justify-center">
-              <span className="font-extrabold text-sm text-slate-950">C</span>
+      <footer className="py-20 px-6 border-t border-white/5 bg-black z-10 relative text-white/20 font-bold text-[11px] uppercase tracking-widest">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+          <div className="flex items-center gap-3">
+            <div className="h-6 w-6 rounded bg-emerald-500/20 flex items-center justify-center">
+              <div className="h-2 w-2 rounded-full bg-emerald-500" />
             </div>
-            <span className="font-bold text-sm tracking-tight text-white">
-              Caixa<span className="text-emerald-400">Up</span>
-            </span>
+            <span className="text-white/60">CaixaUp Premium © 2026</span>
           </div>
-
-          <div className="flex gap-6">
-            <a href="#features" className="hover:text-slate-350 transition">Funcionalidades</a>
-            <a href="#pricing" className="hover:text-slate-350 transition">Planos</a>
-            <a href="/login" className="hover:text-slate-350 transition">Acesso ao Painel</a>
-          </div>
-
-          <div>
-            © {new Date().getFullYear()} CaixaUp. Desenvolvido com segurança bancária.
+          <div className="flex gap-10">
+            <a href="#" className="hover:text-white transition-colors">Termos</a>
+            <a href="#" className="hover:text-white transition-colors">Privacidade</a>
+            <a href="/login" className="text-white hover:text-emerald-400 transition-colors">Acesso Restrito</a>
           </div>
         </div>
       </footer>
