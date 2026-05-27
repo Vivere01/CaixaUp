@@ -231,7 +231,7 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild><button className="p-2 hover:bg-surface-container-high rounded-xl transition-colors"><span className="material-symbols-outlined text-outline-variant">more_vert</span></button></DropdownMenuTrigger>
+                      <DropdownMenuTrigger render={<button className="p-2 hover:bg-surface-container-high rounded-xl transition-colors"><span className="material-symbols-outlined text-outline-variant">more_vert</span></button>} />
                       <DropdownMenuContent className="rounded-2xl p-2 shadow-xl border-outline-variant/20">
                          <DropdownMenuItem onClick={() => handleOpenEdit(tx)} className="rounded-xl font-bold gap-2"><span className="material-symbols-outlined text-[18px]">edit</span>Editar</DropdownMenuItem>
                          <DropdownMenuItem onClick={() => handleOpenDelete(tx)} className="rounded-xl font-bold gap-2 text-error focus:bg-error-container/20"><span className="material-symbols-outlined text-[18px]">delete</span>Excluir</DropdownMenuItem>
@@ -261,7 +261,7 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
                     </div>
                   </div>
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild><button className="p-1 hover:bg-surface-container-high rounded-lg transition-colors"><span className="material-symbols-outlined text-outline-variant">more_vert</span></button></DropdownMenuTrigger>
+                    <DropdownMenuTrigger render={<button className="p-1 hover:bg-surface-container-high rounded-lg transition-colors"><span className="material-symbols-outlined text-outline-variant">more_vert</span></button>} />
                     <DropdownMenuContent className="rounded-2xl p-2 shadow-xl border-outline-variant/20">
                        <DropdownMenuItem onClick={() => handleOpenEdit(tx)} className="rounded-xl font-bold gap-2"><span className="material-symbols-outlined text-[18px]">edit</span>Editar</DropdownMenuItem>
                        <DropdownMenuItem onClick={() => handleOpenDelete(tx)} className="rounded-xl font-bold gap-2 text-error focus:bg-error-container/20"><span className="material-symbols-outlined text-[18px]">delete</span>Excluir</DropdownMenuItem>
