@@ -7,6 +7,7 @@ import { login } from '@/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import Image from 'next/image'
 
 const initialState = {
   error: '',
@@ -24,14 +25,18 @@ export default function LoginPage() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-blue-500/10 blur-[100px]" />
         
         {/* Logo/Header */}
-        <div className="relative z-10 flex items-center gap-2">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-emerald-400 to-blue-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <span className="font-extrabold text-xl text-slate-950">C</span>
-          </div>
+        <Link href="/" className="relative z-10 flex items-center gap-3">
+          <Image 
+            src="/logo.png" 
+            alt="CaixaUp Logo" 
+            width={40} 
+            height={40} 
+            className="rounded-xl shadow-lg shadow-emerald-500/20"
+          />
           <span className="font-bold text-2xl tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
             Caixa<span className="text-emerald-400">Up</span>
           </span>
-        </div>
+        </Link>
 
         {/* Big visual showcase */}
         <div className="relative z-10 my-auto max-w-md">
@@ -77,14 +82,18 @@ export default function LoginPage() {
         
         <div className="w-full max-w-md relative z-10">
           {/* Logo on Mobile */}
-          <div className="lg:hidden flex items-center gap-2 mb-8 justify-center">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-tr from-emerald-400 to-blue-500 flex items-center justify-center">
-              <span className="font-extrabold text-lg text-slate-950">C</span>
-            </div>
+          <Link href="/" className="lg:hidden flex items-center gap-3 mb-8 justify-center">
+            <Image 
+              src="/logo.png" 
+              alt="CaixaUp Logo" 
+              width={36} 
+              height={36} 
+              className="rounded-lg shadow-lg shadow-emerald-500/20"
+            />
             <span className="font-bold text-xl tracking-tight text-white">
               Caixa<span className="text-emerald-400">Up</span>
             </span>
-          </div>
+          </Link>
 
           <div className="mb-8 text-center lg:text-left">
             <h2 className="text-3xl font-bold tracking-tight">Bem-vindo de volta</h2>

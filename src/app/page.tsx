@@ -16,9 +16,11 @@ import {
   CheckCircle2, 
   Receipt,
   FileCheck,
-  ChevronRight
+  ChevronRight,
+  Activity
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import Image from 'next/image'
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -51,17 +53,21 @@ export default function LandingPage() {
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed top-0 left-0 right-0 z-50 bg-black/70 backdrop-blur-xl border-b border-white/5 px-6 py-3"
+        className="fixed top-0 left-0 right-0 z-50 bg-black/70 backdrop-blur-xl border-b border-white/5 px-6 py-4"
       >
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2 group cursor-pointer">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-emerald-400 to-blue-500 flex items-center justify-center transition-transform group-hover:scale-110">
-              <span className="font-black text-sm text-black">C</span>
-            </div>
-            <span className="font-bold text-lg tracking-tight">
+          <Link href="/" className="flex items-center gap-3 group cursor-pointer">
+            <Image 
+              src="/logo.png" 
+              alt="CaixaUp Logo" 
+              width={32} 
+              height={32} 
+              className="rounded-lg transition-transform group-hover:scale-110"
+            />
+            <span className="font-bold text-xl tracking-tight">
               Caixa<span className="text-emerald-400">Up</span>
             </span>
-          </div>
+          </Link>
 
           <nav className="hidden md:flex items-center gap-8 text-[13px] text-white/60 font-medium">
             {['Funcionalidades', 'Como Funciona', 'DRE', 'Planos'].map((item) => (
@@ -102,22 +108,23 @@ export default function LandingPage() {
           <motion.h1 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] text-white"
+            transition={{ delay: 0.2, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            className="text-7xl md:text-[9rem] font-black tracking-tighter leading-[0.8] text-white"
           >
-            Decisões baseadas <br />
-            <span className="bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">
-              em clareza absoluta.
+            Clareza <br />
+            <span className="bg-gradient-to-b from-white to-white/20 bg-clip-text text-transparent">
+              Financeira.
             </span>
           </motion.h1>
 
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="text-white/40 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed"
+            transition={{ delay: 0.5, duration: 1 }}
+            className="text-white/50 text-xl md:text-2xl max-w-3xl mx-auto font-medium leading-relaxed tracking-tight"
           >
-            Substitua planilhas arcaicas por uma interface pensada para o crescimento. Controle margens, DRE e fluxo de caixa com o design que seu negócio merece.
+            A plataforma de gestão que transforma dados brutos em decisões estratégicas. 
+            DRE, fluxo de caixa e margens com a precisão que seu negócio exige.
           </motion.p>
 
           <motion.div 
@@ -149,56 +156,66 @@ export default function LandingPage() {
           transition={{ duration: 1 }}
           className="max-w-5xl mx-auto"
         >
-          <div className="bg-[#111] border border-white/10 rounded-[2.5rem] p-4 md:p-12 shadow-3xl overflow-hidden relative group">
+          <div className="bg-[#111] border border-white/10 rounded-[3rem] p-4 md:p-16 shadow-3xl overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             
             {/* Mock Dashboard Header */}
-            <div className="flex items-center justify-between mb-12 border-b border-white/5 pb-8">
-              <div className="space-y-1">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">Visão Geral</p>
-                <h2 className="text-3xl font-bold">Analytics de Luxo</h2>
+            <div className="flex items-center justify-between mb-16 border-b border-white/5 pb-10">
+              <div className="space-y-2">
+                <p className="text-[12px] font-black uppercase tracking-[0.3em] text-emerald-400">Inteligência Financeira</p>
+                <h2 className="text-4xl font-bold tracking-tight">Performance em Tempo Real</h2>
               </div>
-              <div className="h-10 w-10 rounded-full border border-white/10 flex items-center justify-center">
-                <Activity className="h-4 w-4 text-emerald-400" />
+              <div className="h-14 w-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-inner">
+                <Activity className="h-6 w-6 text-emerald-400" />
               </div>
             </div>
 
             {/* Floating KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
               {[
-                { label: 'Faturamento', value: 'R$ 124.500', trend: '+12%', color: 'text-emerald-400' },
-                { label: 'Custos', value: 'R$ 48.200', trend: '-2%', color: 'text-white/60' },
-                { label: 'Margem', value: '61.2%', trend: 'Saudável', color: 'text-blue-400' },
+                { label: 'Faturamento', value: 'R$ 124.500', trend: '+12%', color: 'text-emerald-400', bg: 'bg-emerald-400/5' },
+                { label: 'Custos', value: 'R$ 48.200', trend: '-2%', color: 'text-white/80', bg: 'bg-white/5' },
+                { label: 'Margem', value: '61.2%', trend: 'Saudável', color: 'text-blue-400', bg: 'bg-blue-400/5' },
               ].map((kpi, i) => (
                 <motion.div 
                   key={i}
-                  whileHover={{ y: -5 }}
-                  className="bg-white/5 border border-white/5 p-6 rounded-3xl backdrop-blur-sm"
+                  whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                  className={`${kpi.bg} border border-white/5 p-8 rounded-[2rem] backdrop-blur-md`}
                 >
-                  <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest">{kpi.label}</p>
-                  <p className={`text-3xl font-black mt-2 ${kpi.color}`}>{kpi.value}</p>
-                  <span className="text-[10px] font-bold mt-2 block opacity-40">{kpi.trend} este mês</span>
+                  <p className="text-[12px] font-bold text-white/40 uppercase tracking-widest">{kpi.label}</p>
+                  <p className={`text-4xl font-black mt-3 ${kpi.color}`}>{kpi.value}</p>
+                  <div className="flex items-center gap-2 mt-4">
+                    <div className={`h-1.5 w-1.5 rounded-full ${kpi.color.replace('text', 'bg')}`} />
+                    <span className="text-[11px] font-bold opacity-40 uppercase tracking-wider">{kpi.trend} este mês</span>
+                  </div>
                 </motion.div>
               ))}
             </div>
 
             {/* DRE Mock */}
-            <div className="bg-black/40 rounded-3xl p-8 border border-white/5">
-              <div className="flex items-center gap-3 mb-6">
-                <LineChart className="h-5 w-5 text-emerald-400" />
-                <h3 className="font-bold text-lg">DRE Sintético</h3>
+            <div className="bg-black/60 rounded-[2.5rem] p-10 border border-white/5 relative overflow-hidden group/dre">
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover/dre:opacity-20 transition-opacity">
+                <FileCheck className="h-24 w-24 text-emerald-400" />
               </div>
-              <div className="space-y-4">
+              <div className="flex items-center gap-4 mb-10">
+                <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                  <LineChart className="h-5 w-5 text-emerald-400" />
+                </div>
+                <h3 className="font-bold text-xl tracking-tight">DRE Analítico</h3>
+              </div>
+              <div className="space-y-6 relative z-10">
                 {[
-                  { label: '(+) Receita Bruta', val: 'R$ 124.500', op: 1 },
-                  { label: '(-) Deduções e Impostos', val: 'R$ 7.470', op: 0 },
-                  { label: '(=) Receita Líquida', val: 'R$ 117.030', op: 1 },
-                  { label: '(-) Custos de Mercadoria', val: 'R$ 40.730', op: 0 },
-                  { label: '(=) Lucro Bruto', val: 'R$ 76.300', op: 1, highlight: true },
+                  { label: '(+) Receita Bruta', val: 'R$ 124.500', op: 1, type: 'plus' },
+                  { label: '(-) Deduções e Impostos', val: 'R$ 7.470', op: 0, type: 'minus' },
+                  { label: '(=) Receita Líquida', val: 'R$ 117.030', op: 1, type: 'equal' },
+                  { label: '(-) Custos de Mercadoria', val: 'R$ 40.730', op: 0, type: 'minus' },
+                  { label: '(=) Lucro Bruto', val: 'R$ 76.300', op: 1, highlight: true, type: 'result' },
                 ].map((row, i) => (
-                  <div key={i} className={`flex justify-between py-2 items-center ${row.highlight ? 'pt-4 mt-2 border-t border-white/10' : ''}`}>
-                    <span className={row.highlight ? 'font-black text-white' : 'text-white/40 text-sm'}>{row.label}</span>
-                    <span className={`font-mono text-sm ${row.highlight ? 'text-emerald-400 text-xl font-black' : (row.op ? 'text-white' : 'text-red-400/80')}`}>
+                  <div key={i} className={`flex justify-between py-3 items-center group/row ${row.highlight ? 'pt-8 mt-4 border-t border-white/10' : 'border-b border-white/[0.03]'}`}>
+                    <span className={`${row.highlight ? 'font-black text-white text-lg' : 'text-white/50 text-sm font-medium'} transition-colors group-hover/row:text-white`}>
+                      {row.label}
+                    </span>
+                    <span className={`font-mono transition-all ${row.highlight ? 'text-emerald-400 text-3xl font-black' : (row.op ? 'text-white/80 text-base' : 'text-red-400/80 text-base')}`}>
                       {row.val}
                     </span>
                   </div>
@@ -234,22 +251,22 @@ export default function LandingPage() {
               { icon: FileSpreadsheet, title: 'Importação Veloz', desc: 'Arraste seu extrato bancário e deixe nossa IA categorizar tudo em segundos.', color: 'emerald' },
               { icon: LineChart, title: 'DRE Automático', desc: 'Chega de esperar o final do mês. Veja seu resultado agora, em tempo real.', color: 'blue' },
               { icon: PieChart, title: 'Margens Reais', desc: 'Entenda exatamente quanto sobra no seu bolso após cada venda.', color: 'purple' },
-              { icon: Users, title: 'Modo Contador', desc: 'Compartilhe acessos específicos com seu escritório contábil sem burocracia.', color: 'orange' },
-              { icon: Shield, title: 'Segurança Root', desc: 'Isolamento de dados via Row Level Security (RLS). Sua conta, suas regras.', color: 'cyan' },
-              { icon: Cpu, title: 'Insights de Luxo', desc: 'Receba avisos proativos sobre vazamentos de caixa e oportunidades.', color: 'emerald' },
+              { icon: Users, title: 'Modo Contador', desc: 'Compartilhe acessos específicos com seu escritório contábil sem burocracia.', color: 'emerald' },
+              { icon: Shield, title: 'Segurança Root', desc: 'Isolamento de dados via Row Level Security (RLS). Sua conta, suas regras.', color: 'blue' },
+              { icon: Cpu, title: 'Insights de Luxo', desc: 'Receba avisos proativos sobre vazamentos de caixa e oportunidades.', color: 'purple' },
             ].map((f, i) => (
               <motion.div 
                 key={i}
                 variants={fadeIn}
-                whileHover={{ y: -10 }}
-                className="bg-[#0a0a0a] border border-white/5 p-10 rounded-[2.5rem] flex flex-col items-start gap-6 hover:border-white/20 transition-colors"
+                whileHover={{ y: -12, backgroundColor: 'rgba(255,255,255,0.03)' }}
+                className="bg-[#080808] border border-white/[0.05] p-12 rounded-[3rem] flex flex-col items-start gap-8 transition-all duration-500 group"
               >
-                <div className={`w-14 h-14 bg-${f.color}-500/10 rounded-2xl flex items-center justify-center text-${f.color}-400`}>
-                  <f.icon className="h-7 w-7" />
+                <div className={`w-16 h-16 bg-${f.color}-500/10 rounded-[1.25rem] flex items-center justify-center text-${f.color}-400 group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-${f.color}-500/5`}>
+                  <f.icon className="h-8 w-8" />
                 </div>
-                <div className="space-y-3">
-                  <h3 className="text-xl font-bold">{f.title}</h3>
-                  <p className="text-white/40 text-sm leading-relaxed font-medium">{f.desc}</p>
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold tracking-tight">{f.title}</h3>
+                  <p className="text-white/40 text-base leading-relaxed font-medium group-hover:text-white/60 transition-colors">{f.desc}</p>
                 </div>
               </motion.div>
             ))}
