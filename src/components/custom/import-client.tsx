@@ -108,23 +108,23 @@ export function ImportClient({ categories }: ImportClientProps) {
   }
 
   return (
-    <div className="space-y-10 font-jakarta">
+    <div className="space-y-8 md:space-y-10 font-jakarta">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-extrabold text-on-surface tracking-tight font-display-hero">Importar Dados</h1>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight font-display-hero">Importar Dados</h1>
           <p className="text-on-surface-variant text-sm mt-1 font-medium italic">Automatize seus lançamentos via CSV ou Excel.</p>
         </div>
       </div>
 
-      <div className="bg-white border border-outline-variant/20 rounded-[2.5rem] p-8 shadow-sm">
+      <div className="bg-white border border-outline-variant/20 rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 shadow-sm">
         {step === 1 && (
-          <div className="flex flex-col items-center justify-center p-16 border-4 border-dashed border-surface-container-high rounded-[3rem] bg-surface hover:bg-surface-container-low transition-all cursor-pointer relative group">
+          <div className="flex flex-col items-center justify-center p-8 md:p-16 border-4 border-dashed border-surface-container-high rounded-3xl md:rounded-[3rem] bg-surface hover:bg-surface-container-low transition-all cursor-pointer relative group">
             <input type="file" accept=".csv, .xlsx, .xls" onChange={handleFileChange} className="absolute inset-0 opacity-0 cursor-pointer" />
-            <div className="h-20 w-20 bg-primary/5 border border-primary/10 text-primary rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-inner">
-               <span className="material-symbols-outlined text-[40px]">cloud_upload</span>
+            <div className="h-16 w-16 md:h-20 md:w-20 bg-primary/5 border border-primary/10 text-primary rounded-2xl md:rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-inner">
+               <span className="material-symbols-outlined text-[32px] md:text-[40px]">cloud_upload</span>
             </div>
-            <h3 className="text-xl font-bold text-on-surface">Selecione seu extrato bancário</h3>
-            <p className="text-sm text-on-surface-variant mt-2 font-medium">Arraste o arquivo ou clique para procurar no seu computador.</p>
+            <h3 className="text-lg md:text-xl font-bold text-on-surface text-center">Selecione seu extrato bancário</h3>
+            <p className="text-xs md:text-sm text-on-surface-variant mt-2 font-medium text-center">Arraste o arquivo ou clique para procurar no seu computador.</p>
             <div className="mt-8 flex gap-3">
                <span className="px-3 py-1 bg-surface-container-highest text-[10px] font-black uppercase rounded-lg">CSV</span>
                <span className="px-3 py-1 bg-surface-container-highest text-[10px] font-black uppercase rounded-lg">XLSX</span>
@@ -133,35 +133,37 @@ export function ImportClient({ categories }: ImportClientProps) {
         )}
 
         {step === 2 && (
-          <div className="max-w-2xl mx-auto space-y-10">
+          <div className="max-w-2xl mx-auto space-y-8 md:space-y-10">
              <div className="flex items-center gap-4 pb-6 border-b border-outline-variant/10">
-                <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary"><span className="material-symbols-outlined">map</span></div>
-                <div><h3 className="text-lg font-bold">Mapeamento de Colunas</h3><p className="text-xs text-on-surface-variant font-medium">Identifique quais colunas representam cada dado no CaixaUp.</p></div>
+                <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary flex-shrink-0"><span className="material-symbols-outlined">map</span></div>
+                <div><h3 className="text-base md:text-lg font-bold">Mapeamento de Colunas</h3><p className="text-[10px] md:text-xs text-on-surface-variant font-medium">Identifique quais colunas representam cada dado no CaixaUp.</p></div>
              </div>
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-2"><Label className="font-bold ml-1 text-xs uppercase tracking-wider opacity-60">Descrição</Label><Select value={descCol} onValueChange={setDescCol}><SelectTrigger className="rounded-xl py-6 bg-surface"><SelectValue /></SelectTrigger><SelectContent>{headers.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent></Select></div>
-                <div className="space-y-2"><Label className="font-bold ml-1 text-xs uppercase tracking-wider opacity-60">Valor</Label><Select value={amountCol} onValueChange={setAmountCol}><SelectTrigger className="rounded-xl py-6 bg-surface"><SelectValue /></SelectTrigger><SelectContent>{headers.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent></Select></div>
-                <div className="space-y-2"><Label className="font-bold ml-1 text-xs uppercase tracking-wider opacity-60">Data</Label><Select value={dateCol} onValueChange={setDateCol}><SelectTrigger className="rounded-xl py-6 bg-surface"><SelectValue /></SelectTrigger><SelectContent>{headers.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent></Select></div>
+             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+                <div className="space-y-2"><Label className="font-bold ml-1 text-[10px] md:text-xs uppercase tracking-wider opacity-60">Descrição</Label><Select value={descCol} onValueChange={setDescCol}><SelectTrigger className="rounded-xl py-6 bg-surface"><SelectValue /></SelectTrigger><SelectContent>{headers.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent></Select></div>
+                <div className="space-y-2"><Label className="font-bold ml-1 text-[10px] md:text-xs uppercase tracking-wider opacity-60">Valor</Label><Select value={amountCol} onValueChange={setAmountCol}><SelectTrigger className="rounded-xl py-6 bg-surface"><SelectValue /></SelectTrigger><SelectContent>{headers.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent></Select></div>
+                <div className="space-y-2"><Label className="font-bold ml-1 text-[10px] md:text-xs uppercase tracking-wider opacity-60">Data</Label><Select value={dateCol} onValueChange={setDateCol}><SelectTrigger className="rounded-xl py-6 bg-surface"><SelectValue /></SelectTrigger><SelectContent>{headers.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent></Select></div>
              </div>
-             <div className="space-y-3 p-6 bg-surface rounded-[2rem] border border-outline-variant/10">
-                <Label className="font-bold text-xs uppercase tracking-wider opacity-60 ml-1">Como tratar a natureza da transação?</Label>
+             <div className="space-y-3 p-5 md:p-6 bg-surface rounded-3xl border border-outline-variant/10">
+                <Label className="font-bold text-[10px] md:text-xs uppercase tracking-wider opacity-60 ml-1">Como tratar a natureza da transação?</Label>
                 <Select value={defaultType} onValueChange={(v: any) => setDefaultType(v)}><SelectTrigger className="rounded-xl py-6 bg-white border-none shadow-sm"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="deduce">Deduzir pelo sinal (+/-)</SelectItem><SelectItem value="expense">Tratar tudo como Despesa</SelectItem><SelectItem value="income">Tratar tudo como Receita</SelectItem></SelectContent></Select>
              </div>
-             <div className="flex gap-4 pt-4">
-                <Button variant="ghost" onClick={() => setStep(1)} className="flex-1 py-7 font-bold rounded-2xl">Voltar</Button>
-                <Button onClick={handleMapConfirm} className="flex-[2] bg-primary text-on-primary py-7 font-bold rounded-2xl shadow-lg shadow-primary/20">Avançar para Preview</Button>
+             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4">
+                <Button variant="ghost" onClick={() => setStep(1)} className="order-2 sm:order-1 flex-1 py-7 font-bold rounded-2xl">Voltar</Button>
+                <Button onClick={handleMapConfirm} className="order-1 sm:order-2 flex-[2] bg-primary text-on-primary py-7 font-bold rounded-2xl shadow-lg shadow-primary/20">Avançar para Preview</Button>
              </div>
           </div>
         )}
 
         {step === 3 && (
-          <div className="space-y-8">
-             <div className="flex items-center justify-between pb-6 border-b border-outline-variant/10">
-                <div className="flex items-center gap-4"><div className="h-12 w-12 rounded-2xl bg-tertiary-container/10 text-tertiary flex items-center justify-center"><span className="material-symbols-outlined">visibility</span></div><div><h3 className="text-lg font-bold">Preview de Importação</h3><p className="text-xs text-on-surface-variant font-medium">Revisamos {itemsToImport.length} transações prontas para o seu caixa.</p></div></div>
-                <div className="flex gap-3"><Button variant="ghost" onClick={() => setStep(2)} className="font-bold rounded-xl">Corrigir</Button><Button disabled={isPending} onClick={handleImportSave} className="bg-primary text-on-primary px-8 font-bold rounded-xl shadow-lg shadow-primary/20">{isPending ? 'Importando...' : 'Confirmar Tudo'}</Button></div>
+          <div className="space-y-6 md:space-y-8">
+             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-outline-variant/10">
+                <div className="flex items-center gap-4"><div className="h-12 w-12 rounded-2xl bg-tertiary-container/10 text-tertiary flex items-center justify-center flex-shrink-0"><span className="material-symbols-outlined">visibility</span></div><div><h3 className="text-base md:text-lg font-bold">Preview de Importação</h3><p className="text-[10px] md:text-xs text-on-surface-variant font-medium">Revisamos {itemsToImport.length} transações prontas para o seu caixa.</p></div></div>
+                <div className="flex gap-3"><Button variant="ghost" onClick={() => setStep(2)} className="flex-1 md:flex-none font-bold rounded-xl">Corrigir</Button><Button disabled={isPending} onClick={handleImportSave} className="flex-[2] md:flex-none bg-primary text-on-primary px-8 font-bold rounded-xl shadow-lg shadow-primary/20">{isPending ? 'Importando...' : 'Confirmar Tudo'}</Button></div>
              </div>
-             <div className="border border-outline-variant/10 rounded-[2rem] overflow-hidden">
-                <Table><TableHeader className="bg-surface"><TableRow className="border-none"><TableHead className="font-bold text-on-surface px-6">Descrição</TableHead><TableHead className="font-bold text-on-surface">Valor</TableHead><TableHead className="font-bold text-on-surface">Data</TableHead><TableHead className="font-bold text-on-surface">Categoria</TableHead></TableRow></TableHeader><TableBody>{itemsToImport.map((item, idx) => (<TableRow key={idx} className="border-outline-variant/5"><TableCell className="px-6 py-4 font-bold text-on-surface text-xs">{item.description}</TableCell><TableCell className={`font-black text-xs ${item.type === 'income' ? 'text-tertiary' : 'text-on-surface'}`}>{item.type === 'income' ? '+' : '-'} {formatCurrency(item.amount)}</TableCell><TableCell className="text-xs font-medium opacity-60">{item.date.split('-').reverse().join('/')}</TableCell><TableCell><span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-surface-container-high rounded-full">{categories.find(c => c.id === item.category_id)?.name || 'Sem Categoria'}</span></TableCell></TableRow>))}</TableBody></Table>
+             <div className="border border-outline-variant/10 rounded-2xl md:rounded-[2rem] overflow-hidden">
+                <div className="overflow-x-auto">
+                  <Table><TableHeader className="bg-surface"><TableRow className="border-none"><TableHead className="font-bold text-on-surface px-6">Descrição</TableHead><TableHead className="font-bold text-on-surface">Valor</TableHead><TableHead className="font-bold text-on-surface">Data</TableHead><TableHead className="font-bold text-on-surface">Categoria</TableHead></TableRow></TableHeader><TableBody>{itemsToImport.map((item, idx) => (<TableRow key={idx} className="border-outline-variant/5"><TableCell className="px-6 py-4 font-bold text-on-surface text-xs whitespace-nowrap md:whitespace-normal">{item.description}</TableCell><TableCell className={`font-black text-xs whitespace-nowrap ${item.type === 'income' ? 'text-tertiary' : 'text-on-surface'}`}>{item.type === 'income' ? '+' : '-'} {formatCurrency(item.amount)}</TableCell><TableCell className="text-xs font-medium opacity-60 whitespace-nowrap">{item.date.split('-').reverse().join('/')}</TableCell><TableCell><span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-surface-container-high rounded-full whitespace-nowrap">{categories.find(c => c.id === item.category_id)?.name || 'Sem Categoria'}</span></TableCell></TableRow>))}</TableBody></Table>
+                </div>
              </div>
           </div>
         )}

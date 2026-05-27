@@ -162,31 +162,31 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
   )
 
   return (
-    <div className="space-y-10 font-jakarta">
+    <div className="space-y-8 md:space-y-10 font-jakarta">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-extrabold text-on-surface tracking-tight font-display-hero">Categorias</h1>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight font-display-hero">Categorias</h1>
           <p className="text-on-surface-variant text-sm mt-1 font-medium italic">Classifique suas transações para relatórios precisos.</p>
         </div>
 
         <Dialog open={isAddOpen} onOpenChange={(val) => { setIsAddOpen(val); if(!val) resetForm(); }}>
           <DialogTrigger asChild>
-            <button className="bg-primary text-on-primary font-bold px-6 py-3.5 rounded-2xl flex items-center gap-2 hover:bg-primary-container transition-all active:scale-95 shadow-lg shadow-primary/20">
+            <button className="w-full sm:w-auto bg-primary text-on-primary font-bold px-6 py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:bg-primary-container transition-all active:scale-95 shadow-lg shadow-primary/20">
               <span className="material-symbols-outlined text-[20px]">add_circle</span>
               <span>Nova Categoria</span>
             </button>
           </DialogTrigger>
           
-          <DialogContent className="bg-white border-none max-w-md rounded-[2.5rem] p-0 overflow-hidden shadow-2xl">
+          <DialogContent className="bg-white border-none max-w-md rounded-3xl md:rounded-[2.5rem] p-0 overflow-hidden shadow-2xl">
             <form onSubmit={handleAddSubmit}>
-              <div className="p-8 bg-surface-container-low">
+              <div className="p-6 md:p-8 bg-surface-container-low">
                 <DialogHeader>
-                  <DialogTitle className="text-2xl font-black text-on-surface">Criar Categoria</DialogTitle>
+                  <DialogTitle className="text-xl md:text-2xl font-black text-on-surface">Criar Categoria</DialogTitle>
                   <DialogDescription className="text-on-surface-variant text-sm font-medium">Defina como você quer classificar seus lançamentos.</DialogDescription>
                 </DialogHeader>
               </div>
 
-              <div className="p-8 space-y-6">
+              <div className="p-6 md:p-8 space-y-6">
                 <div className="space-y-2">
                   <Label className="text-on-surface font-bold ml-1">Nome da Categoria</Label>
                   <Input required value={formName} onChange={(e) => setFormName(e.target.value)} className="bg-surface border-outline-variant/30 rounded-2xl py-6" />
@@ -226,7 +226,7 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
                 </div>
               </div>
 
-              <div className="p-8 bg-surface-container-low flex gap-3">
+              <div className="p-6 md:p-8 bg-surface-container-low flex gap-3">
                 <Button type="button" variant="ghost" onClick={() => setIsAddOpen(false)} className="flex-1 rounded-xl font-bold py-6">Cancelar</Button>
                 <Button type="submit" disabled={isPending} className="flex-1 bg-primary text-on-primary font-bold rounded-xl py-6">{isPending ? 'Criando...' : 'Confirmar'}</Button>
               </div>
@@ -236,23 +236,23 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
       </div>
 
       <Tabs defaultValue="expenses" className="w-full">
-        <TabsList className="bg-white border border-outline-variant/20 p-1.5 rounded-2xl h-auto gap-1 shadow-sm">
-          <TabsTrigger value="expenses" className="rounded-xl font-bold text-xs px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-on-primary transition-all">
+        <TabsList className="bg-white border border-outline-variant/20 p-1.5 rounded-2xl h-auto flex flex-wrap gap-1 shadow-sm">
+          <TabsTrigger value="expenses" className="flex-1 sm:flex-none rounded-xl font-bold text-xs px-4 md:px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-on-primary transition-all">
             Despesas ({expenses.length})
           </TabsTrigger>
-          <TabsTrigger value="incomes" className="rounded-xl font-bold text-xs px-8 py-3 data-[state=active]:bg-tertiary data-[state=active]:text-on-primary transition-all">
+          <TabsTrigger value="incomes" className="flex-1 sm:flex-none rounded-xl font-bold text-xs px-4 md:px-8 py-3 data-[state=active]:bg-tertiary data-[state=active]:text-on-primary transition-all">
             Receitas ({incomes.length})
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="expenses" className="pt-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <TabsContent value="expenses" className="pt-6 md:pt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {expenses.map(renderCategoryCard)}
           </div>
         </TabsContent>
 
-        <TabsContent value="incomes" className="pt-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <TabsContent value="incomes" className="pt-6 md:pt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {incomes.map(renderCategoryCard)}
           </div>
         </TabsContent>

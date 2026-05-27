@@ -22,7 +22,7 @@ export function SidebarNav({ companyName, userName }: SidebarNavProps) {
   ]
 
   return (
-    <aside className="w-72 bg-white border-r border-outline-variant/20 flex flex-col justify-between h-screen sticky top-0 font-jakarta shadow-sm z-40">
+    <aside className="hidden lg:flex w-72 bg-white border-r border-outline-variant/20 flex-col justify-between h-screen sticky top-0 font-jakarta shadow-sm z-40">
       {/* Upper Section */}
       <div className="flex-1 overflow-y-auto px-6 py-8 space-y-10">
         {/* Company Header */}

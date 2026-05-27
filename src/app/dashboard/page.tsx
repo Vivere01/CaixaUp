@@ -88,21 +88,21 @@ export default async function DashboardPage() {
   })
 
   return (
-    <div className="space-y-10 font-jakarta">
+    <div className="space-y-8 md:space-y-10 font-jakarta">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-extrabold text-on-surface tracking-tight font-display-hero">Painel de Gestão</h1>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight font-display-hero">Painel de Gestão</h1>
           <p className="text-on-surface-variant text-sm mt-1 font-medium italic">Visão consolidada da performance da sua empresa.</p>
         </div>
-        <div className="flex gap-4">
-          <Link href="/dashboard/import">
-            <button className="bg-white text-primary border border-outline-variant/30 font-bold px-6 py-3.5 rounded-2xl flex items-center gap-2 hover:bg-surface-container transition-all active:scale-95 shadow-sm">
+        <div className="flex gap-3 md:gap-4">
+          <Link href="/dashboard/import" className="flex-1 md:flex-none">
+            <button className="w-full bg-white text-primary border border-outline-variant/30 font-bold px-4 md:px-6 py-3 md:py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:bg-surface-container transition-all active:scale-95 shadow-sm text-sm md:text-base">
               <span className="material-symbols-outlined text-[20px]">upload_file</span>
               <span>Importar</span>
             </button>
           </Link>
-          <Link href="/dashboard/transactions?new=true">
-            <button className="bg-primary text-on-primary font-bold px-6 py-3.5 rounded-2xl flex items-center gap-2 hover:bg-primary-container transition-all active:scale-95 shadow-lg shadow-primary/20">
+          <Link href="/dashboard/transactions?new=true" className="flex-1 md:flex-none">
+            <button className="w-full bg-primary text-on-primary font-bold px-4 md:px-6 py-3 md:py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:bg-primary-container transition-all active:scale-95 shadow-lg shadow-primary/20 text-sm md:text-base">
               <span className="material-symbols-outlined text-[20px]">add_circle</span>
               <span>Lançar</span>
             </button>
@@ -110,7 +110,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <KPICard title="Faturamento" value={formatCurrency(faturamento)} icon="payments" color="primary" />
         <KPICard title="Despesas" value={formatCurrency(despesas)} icon="receipt_long" color="error" />
         <KPICard title="Lucro Líquido" value={formatCurrency(lucro)} icon="trending_up" color="tertiary" />
@@ -118,20 +118,20 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          <div className="bg-white border border-outline-variant/20 rounded-[2.5rem] p-8 shadow-sm">
-            <h3 className="text-lg font-bold text-on-surface flex items-center gap-2 mb-8 pb-6 border-b border-outline-variant/10">
+        <div className="lg:col-span-2 space-y-6 md:space-y-8">
+          <div className="bg-white border border-outline-variant/20 rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 shadow-sm">
+            <h3 className="text-lg font-bold text-on-surface flex items-center gap-2 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-outline-variant/10">
               <span className="material-symbols-outlined text-primary">analytics</span> Fluxo de Caixa
             </h3>
             <DashboardCharts data={chartData} />
           </div>
 
-          <div className="bg-white border border-outline-variant/20 rounded-[2.5rem] p-8 shadow-sm">
-            <div className="flex justify-between items-center mb-8 pb-6 border-b border-outline-variant/10">
+          <div className="bg-white border border-outline-variant/20 rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 shadow-sm">
+            <div className="flex justify-between items-center mb-6 md:mb-8 pb-4 md:pb-6 border-b border-outline-variant/10">
               <h3 className="text-lg font-bold text-on-surface flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">history</span> Lançamentos Recentes
               </h3>
-              <Link href="/dashboard/transactions" className="text-xs text-primary hover:underline font-bold uppercase tracking-widest">Ver Todos</Link>
+              <Link href="/dashboard/transactions" className="text-[10px] md:text-xs text-primary hover:underline font-bold uppercase tracking-widest">Ver Todos</Link>
             </div>
             <div className="space-y-1">
               {recentTransactions.length > 0 ? (
@@ -146,12 +146,12 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <div className="lg:col-span-1 space-y-8">
-          <div className="bg-white border border-outline-variant/20 rounded-[2.5rem] p-8 shadow-sm h-full">
-            <h3 className="text-lg font-bold text-on-surface flex items-center gap-2 mb-8 pb-6 border-b border-outline-variant/10">
+        <div className="lg:col-span-1 space-y-6 md:space-y-8">
+          <div className="bg-white border border-outline-variant/20 rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 shadow-sm h-full">
+            <h3 className="text-lg font-bold text-on-surface flex items-center gap-2 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-outline-variant/10">
               <span className="material-symbols-outlined text-primary">lightbulb</span> Inteligência
             </h3>
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               {insights.map((insight, idx) => <InsightItem key={idx} insight={insight} />)}
             </div>
           </div>
@@ -165,12 +165,12 @@ function KPICard({ title, value, icon, color }: any) {
   const colorClass = color === 'error' ? 'text-error' : color === 'tertiary' ? 'text-tertiary' : 'text-primary'
   const bgClass = color === 'error' ? 'bg-error-container/20' : color === 'tertiary' ? 'bg-tertiary-container/10' : 'bg-primary/5'
   return (
-    <div className="bg-white border border-outline-variant/20 p-8 rounded-[2rem] shadow-sm group">
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">{title}</p>
-        <div className={`h-10 w-10 rounded-xl ${bgClass} flex items-center justify-center ${colorClass} group-hover:scale-110 transition-transform`}><span className="material-symbols-outlined text-[20px]">{icon}</span></div>
+    <div className="bg-white border border-outline-variant/20 p-6 md:p-8 rounded-3xl md:rounded-[2rem] shadow-sm group">
+      <div className="flex items-center justify-between mb-3 md:mb-4">
+        <p className="text-[10px] md:text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">{title}</p>
+        <div className={`h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl ${bgClass} flex items-center justify-center ${colorClass} group-hover:scale-110 transition-transform`}><span className="material-symbols-outlined text-[18px] md:text-[20px]">{icon}</span></div>
       </div>
-      <h4 className="text-2xl font-black text-on-surface">{value}</h4>
+      <h4 className="text-xl md:text-2xl font-black text-on-surface">{value}</h4>
     </div>
   )
 }
