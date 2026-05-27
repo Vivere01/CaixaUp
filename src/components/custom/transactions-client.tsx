@@ -141,7 +141,7 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                    <Label className="font-bold ml-1">Tipo</Label>
-                   <Select value={formType} onValueChange={(v: any) => { setFormType(v); setFormCategoryId(''); }}>
+                   <Select value={formType} onValueChange={(v: any) => { setFormType(v || 'expense'); setFormCategoryId(''); }}>
                       <SelectTrigger className="rounded-xl py-6 bg-surface border-outline-variant/30"><SelectValue /></SelectTrigger>
                       <SelectContent><SelectItem value="expense">Saída</SelectItem><SelectItem value="income">Entrada</SelectItem></SelectContent>
                    </Select>
@@ -158,11 +158,12 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                  <div className="space-y-2">
                     <Label className="font-bold ml-1">Categoria</Label>
-                    <Select value={formCategoryId} onValueChange={setFormCategoryId}>
+                    <Select value={formCategoryId} onValueChange={(v) => setFormCategoryId(v || '')}>
                        <SelectTrigger className="rounded-xl py-6 bg-surface border-outline-variant/30"><SelectValue placeholder="Selecione" /></SelectTrigger>
                        <SelectContent>{filteredFormCategories.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                     </Select>
                  </div>
+
                  <div className="space-y-2">
                     <Label className="font-bold ml-1">Data</Label>
                     <Input type="date" required value={formDate} onChange={e => setFormDate(e.target.value)} className="rounded-xl py-6 bg-surface border-outline-variant/30" />
@@ -183,15 +184,15 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
              <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-outline-variant"><span className="material-symbols-outlined text-[20px]">search</span></span>
              <Input placeholder="Buscar..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-12 bg-surface border-outline-variant/30 rounded-2xl py-6" />
           </div>
-          <Select value={typeFilter} onValueChange={(v: any) => setTypeFilter(v)}>
+          <Select value={typeFilter} onValueChange={(v: any) => setTypeFilter(v || 'all')}>
             <SelectTrigger className="bg-surface border-outline-variant/30 rounded-2xl py-6"><SelectValue placeholder="Tipo" /></SelectTrigger>
             <SelectContent><SelectItem value="all">Todos os tipos</SelectItem><SelectItem value="income">Entradas</SelectItem><SelectItem value="expense">Saídas</SelectItem></SelectContent>
           </Select>
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v || 'all')}>
             <SelectTrigger className="bg-surface border-outline-variant/30 rounded-2xl py-6"><SelectValue placeholder="Categoria" /></SelectTrigger>
             <SelectContent><SelectItem value="all">Todas</SelectItem>{categories.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
           </Select>
-          <Select value={monthFilter} onValueChange={setMonthFilter}>
+          <Select value={monthFilter} onValueChange={(v) => setMonthFilter(v || 'all')}>
             <SelectTrigger className="bg-surface border-outline-variant/30 rounded-2xl py-6"><SelectValue placeholder="Mês" /></SelectTrigger>
             <SelectContent><SelectItem value="all">Todos os meses</SelectItem>{uniqueMonths.map(m => <SelectItem key={m} value={m}>{getMonthLabel(m)}</SelectItem>)}</SelectContent>
           </Select>
