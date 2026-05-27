@@ -12,6 +12,7 @@ export async function createTransaction(data: {
   payment_method: string
   status: 'paid' | 'pending'
   notes?: string
+  cost_center?: 'fixed' | 'variable'
 }) {
   const supabase = await createClient()
 
@@ -38,6 +39,7 @@ export async function createTransaction(data: {
       payment_method: data.payment_method,
       status: data.status,
       notes: data.notes || '',
+      cost_center: data.cost_center || 'variable',
     })
 
   if (error) return { error: error.message }
@@ -57,6 +59,7 @@ export async function updateTransaction(id: string, data: {
   payment_method: string
   status: 'paid' | 'pending'
   notes?: string
+  cost_center?: 'fixed' | 'variable'
 }) {
   const supabase = await createClient()
 
@@ -71,6 +74,7 @@ export async function updateTransaction(id: string, data: {
       payment_method: data.payment_method,
       status: data.status,
       notes: data.notes || '',
+      cost_center: data.cost_center || 'variable',
     })
     .eq('id', id)
 
@@ -136,6 +140,33 @@ export async function bulkCreateTransactions(transactions: {
   const { error } = await supabase
     .from('transactions')
     .insert(itemsToInsert)
+
+  if (error) return { error: error.message }
+
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/transactions')
+  revalidatePath('/dashboard/dre')
+  return { success: true }
+}
+
+export async function clearTransactions() {
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Usuário não autenticado.' }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('company_id')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile?.company_id) return { error: 'Perfil empresarial ausente.' }
+
+  const { error } = await supabase
+    .from('transactions')
+    .delete()
+    .eq('company_id', profile.company_id)
 
   if (error) return { error: error.message }
 

@@ -76,12 +76,16 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
   const [formPaymentMethod, setFormPaymentMethod] = useState('pix')
   const [formStatus, setFormStatus] = useState<'paid' | 'pending'>('paid')
   const [formNotes, setFormNotes] = useState('')
+  const [formCostCenter, setFormCostCenter] = useState<'fixed' | 'variable'>('variable')
 
   const handleOpenEdit = (tx: Transaction) => {
     setSelectedTx(tx)
     setFormDescription(tx.description); setFormAmount(tx.amount.toString()); setFormType(tx.type);
     setFormCategoryId(tx.category_id || ''); setFormDate(tx.date); setFormPaymentMethod(tx.payment_method);
-    setFormStatus(tx.status); setFormNotes(tx.notes || ''); setIsEditOpen(true);
+    setFormStatus(tx.status); setFormNotes(tx.notes || ''); 
+    // @ts-ignore
+    setFormCostCenter(tx.cost_center || 'variable');
+    setIsEditOpen(true);
   }
 
   const handleOpenDelete = (tx: Transaction) => { setSelectedTx(tx); setIsDeleteOpen(true); }
@@ -89,6 +93,7 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
   const resetAddForm = () => {
     setFormDescription(''); setFormAmount(''); setFormType('expense'); setFormCategoryId('');
     setFormDate(format(new Date(), 'yyyy-MM-dd')); setFormPaymentMethod('pix'); setFormStatus('paid'); setFormNotes('');
+    setFormCostCenter('variable');
   }
 
   const filteredFormCategories = categories.filter(c => c.type === formType)
@@ -97,7 +102,17 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
     e.preventDefault()
     if (!formDescription || !formAmount || !formDate) return toast.error('Preencha os obrigatórios.')
     startTransition(async () => {
-      const res = await createTransaction({ description: formDescription, amount: parseFloat(formAmount), type: formType, category_id: formCategoryId || null, date: formDate, payment_method: formPaymentMethod, status: formStatus, notes: formNotes })
+      const res = await createTransaction({ 
+        description: formDescription, 
+        amount: parseFloat(formAmount), 
+        type: formType, 
+        category_id: formCategoryId || null, 
+        date: formDate, 
+        payment_method: formPaymentMethod, 
+        status: formStatus, 
+        notes: formNotes,
+        cost_center: formCostCenter
+      })
       if (res.error) toast.error(res.error)
       else { toast.success('Lançamento realizado!'); setIsAddOpen(false); resetAddForm(); }
     })
@@ -147,9 +162,16 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
                    </Select>
                 </div>
                 <div className="space-y-2">
-                   <Label className="font-bold ml-1">Valor (R$)</Label>
-                   <Input type="number" step="0.01" required value={formAmount} onChange={e => setFormAmount(e.target.value)} className="rounded-xl py-6 bg-surface border-outline-variant/30" />
+                   <Label className="font-bold ml-1">Natureza</Label>
+                   <Select value={formCostCenter} onValueChange={(v: any) => setFormCostCenter(v || 'variable')}>
+                      <SelectTrigger className="rounded-xl py-6 bg-surface border-outline-variant/30"><SelectValue /></SelectTrigger>
+                      <SelectContent><SelectItem value="variable">Variável</SelectItem><SelectItem value="fixed">Fixa</SelectItem></SelectContent>
+                   </Select>
                 </div>
+              </div>
+              <div className="space-y-2">
+                 <Label className="font-bold ml-1">Valor (R$)</Label>
+                 <Input type="number" step="0.01" required value={formAmount} onChange={e => setFormAmount(e.target.value)} className="rounded-xl py-6 bg-surface border-outline-variant/30" />
               </div>
               <div className="space-y-2">
                 <Label className="font-bold ml-1">Descrição</Label>

@@ -4,6 +4,17 @@ import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from '@/actions/auth'
+import { clearTransactions } from '@/actions/transactions'
+import { toast } from 'sonner'
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription, 
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 
 interface SidebarNavProps {
   companyName: string
@@ -12,6 +23,7 @@ interface SidebarNavProps {
 
 export function SidebarNav({ companyName, userName }: SidebarNavProps) {
   const pathname = usePathname()
+  const [isClearOpen, setIsClearOpen] = React.useState(false)
 
   const links = [
     { name: 'Dashboard', href: '/dashboard', icon: 'grid_view' },
@@ -20,6 +32,15 @@ export function SidebarNav({ companyName, userName }: SidebarNavProps) {
     { name: 'Importar', href: '/dashboard/import', icon: 'upload_file' },
     { name: 'Relatório DRE', href: '/dashboard/dre', icon: 'analytics' },
   ]
+
+  const handleClearData = async () => {
+    const res = await clearTransactions()
+    if (res.error) toast.error(res.error)
+    else {
+      toast.success('Todos os dados foram limpos.')
+      setIsClearOpen(false)
+    }
+  }
 
   return (
     <aside className="hidden lg:flex w-72 bg-white border-r border-outline-variant/20 flex-col justify-between h-screen sticky top-0 font-jakarta shadow-sm z-40">
@@ -61,8 +82,8 @@ export function SidebarNav({ companyName, userName }: SidebarNavProps) {
       </div>
 
       {/* User Section (Bottom) */}
-      <div className="p-6 bg-surface-container-lowest border-t border-outline-variant/10 space-y-4">
-        <div className="flex items-center gap-3 px-2">
+      <div className="p-6 bg-surface-container-lowest border-t border-outline-variant/10 space-y-2">
+        <div className="flex items-center gap-3 px-2 mb-4">
           <div className="h-10 w-10 rounded-xl bg-secondary-container/30 flex items-center justify-center text-secondary font-bold border border-secondary/10">
             {userName.charAt(0).toUpperCase()}
           </div>
@@ -74,6 +95,27 @@ export function SidebarNav({ companyName, userName }: SidebarNavProps) {
             </div>
           </div>
         </div>
+
+        <Dialog open={isClearOpen} onOpenChange={setIsClearOpen}>
+          <DialogTrigger render={
+            <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-on-surface-variant hover:bg-surface-container transition-all border border-transparent">
+              <span className="material-symbols-outlined text-[18px]">delete_sweep</span>
+              <span>Limpar Painel</span>
+            </button>
+          } />
+          <DialogContent className="max-w-sm rounded-3xl p-8 border-none">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-black text-on-surface text-left">Limpar Painel?</DialogTitle>
+              <DialogDescription className="font-medium text-on-surface-variant text-left mt-2 leading-relaxed">
+                Isso irá excluir permanentemente todos os seus lançamentos e dados do dashboard. Esta ação não pode ser desfeita.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex gap-3 pt-6">
+              <Button variant="ghost" onClick={() => setIsClearOpen(false)} className="flex-1 rounded-xl font-bold py-6">Cancelar</Button>
+              <Button onClick={handleClearData} className="flex-1 bg-error text-on-error font-bold rounded-xl shadow-lg shadow-error/20 py-6">Confirmar</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <button
           onClick={() => signOut()}
