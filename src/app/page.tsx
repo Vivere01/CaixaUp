@@ -13,7 +13,6 @@ import {
   Users, 
   Zap, 
   CheckCircle2, 
-  Building2, 
   Receipt,
   FileCheck
 } from 'lucide-react'

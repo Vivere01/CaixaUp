@@ -16,7 +16,7 @@ export function generateInsights(metrics: {
 }): InsightCardData[] {
   const insights: InsightCardData[] = []
 
-  const { faturamento, despesas, lucro, margem, prevFaturamento, prevDespesas, prevLucro, prevMargem } = metrics
+  const { faturamento, despesas, lucro, margem, prevFaturamento, prevDespesas, prevMargem } = metrics
 
   if (faturamento === 0 && despesas === 0) {
     insights.push({

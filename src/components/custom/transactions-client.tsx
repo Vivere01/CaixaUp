@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useTransition, useEffect } from 'react'
+import React, { useState, useTransition } from 'react'
 import { 
   createTransaction, 
   updateTransaction, 
@@ -11,13 +11,9 @@ import { format } from 'date-fns'
 import { 
   Plus, 
   Search, 
-  Filter, 
   Edit2, 
   Trash2, 
-  MoreVertical,
-  Calendar,
-  DollarSign,
-  Tag
+  MoreVertical
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -63,7 +59,14 @@ const formatCurrency = (val: number) => {
 }
 
 export function TransactionsClient({ initialTransactions, categories, openNewModalOnMount = false }: TransactionsClientProps) {
+  const [prevInitialTransactions, setPrevInitialTransactions] = useState(initialTransactions)
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions)
+
+  if (initialTransactions !== prevInitialTransactions) {
+    setPrevInitialTransactions(initialTransactions)
+    setTransactions(initialTransactions)
+  }
+
   const [isPending, startTransition] = useTransition()
 
   // Filters State
@@ -89,11 +92,6 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
   const [formPaymentMethod, setFormPaymentMethod] = useState('pix')
   const [formStatus, setFormStatus] = useState<'paid' | 'pending'>('paid')
   const [formNotes, setFormNotes] = useState('')
-
-  // Sync initialTransactions on prop changes
-  useEffect(() => {
-    setTransactions(initialTransactions)
-  }, [initialTransactions])
 
   // Open Edit Modal
   const handleOpenEdit = (tx: Transaction) => {
@@ -239,12 +237,14 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
         </div>
 
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold gap-2 rounded-xl py-5 shadow-lg shadow-emerald-500/10">
-              <Plus className="h-4 w-4" />
-              <span>Nova Transação</span>
-            </Button>
-          </DialogTrigger>
+          <DialogTrigger
+            render={
+              <Button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold gap-2 rounded-xl py-5 shadow-lg shadow-emerald-500/10">
+                <Plus className="h-4 w-4" />
+                <span>Nova Transação</span>
+              </Button>
+            }
+          />
           
           <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-md rounded-2xl">
             <form onSubmit={handleAddSubmit} className="space-y-4">
@@ -258,8 +258,8 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
                   <Label className="text-slate-350 text-xs">Tipo</Label>
                   <Select 
                     value={formType} 
-                    onValueChange={(val: 'income' | 'expense') => {
-                      setFormType(val)
+                    onValueChange={(val) => {
+                      setFormType((val || 'expense') as 'income' | 'expense')
                       setFormCategoryId('') // Reset category selection
                     }}
                   >
@@ -301,7 +301,7 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-slate-350 text-xs">Categoria</Label>
-                  <Select value={formCategoryId} onValueChange={setFormCategoryId}>
+                  <Select value={formCategoryId} onValueChange={(val) => setFormCategoryId(val || '')}>
                     <SelectTrigger className="bg-slate-950 border-slate-850 rounded-xl">
                       <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
@@ -328,7 +328,7 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-slate-350 text-xs">Método</Label>
-                  <Select value={formPaymentMethod} onValueChange={setFormPaymentMethod}>
+                  <Select value={formPaymentMethod} onValueChange={(val) => setFormPaymentMethod(val || '')}>
                     <SelectTrigger className="bg-slate-950 border-slate-850 rounded-xl">
                       <SelectValue />
                     </SelectTrigger>
@@ -344,7 +344,7 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
 
                 <div className="space-y-2">
                   <Label className="text-slate-350 text-xs">Status</Label>
-                  <Select value={formStatus} onValueChange={(val: 'paid' | 'pending') => setFormStatus(val)}>
+                  <Select value={formStatus} onValueChange={(val) => setFormStatus((val || 'paid') as 'paid' | 'pending')}>
                     <SelectTrigger className="bg-slate-950 border-slate-850 rounded-xl">
                       <SelectValue />
                     </SelectTrigger>
@@ -403,7 +403,7 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
           </div>
 
           {/* Type Filter */}
-          <Select value={typeFilter} onValueChange={(val: any) => setTypeFilter(val)}>
+          <Select value={typeFilter} onValueChange={(val) => setTypeFilter((val || 'all') as 'all' | 'income' | 'expense')}>
             <SelectTrigger className="bg-slate-950 border-slate-850 rounded-xl">
               <SelectValue placeholder="Filtrar Tipo" />
             </SelectTrigger>
@@ -415,7 +415,7 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
           </Select>
 
           {/* Category Filter */}
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <Select value={categoryFilter} onValueChange={(val) => setCategoryFilter(val || 'all')}>
             <SelectTrigger className="bg-slate-950 border-slate-850 rounded-xl">
               <SelectValue placeholder="Filtrar Categoria" />
             </SelectTrigger>
@@ -428,7 +428,7 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
           </Select>
 
           {/* Month Filter */}
-          <Select value={monthFilter} onValueChange={setMonthFilter}>
+          <Select value={monthFilter} onValueChange={(val) => setMonthFilter(val || 'all')}>
             <SelectTrigger className="bg-slate-950 border-slate-850 rounded-xl">
               <SelectValue placeholder="Filtrar Mês" />
             </SelectTrigger>
@@ -486,11 +486,13 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
                     </TableCell>
                     <TableCell>
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-white rounded-lg">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
+                        <DropdownMenuTrigger
+                          render={
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-white rounded-lg">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          }
+                        />
                         <DropdownMenuContent className="bg-slate-900 border-slate-800 text-white">
                           <DropdownMenuItem onClick={() => handleOpenEdit(tx)} className="gap-2 focus:bg-slate-800 focus:text-white font-semibold">
                             <Edit2 className="h-3.5 w-3.5" />
@@ -531,8 +533,8 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
                 <Label className="text-slate-350 text-xs">Tipo</Label>
                 <Select 
                   value={formType} 
-                  onValueChange={(val: 'income' | 'expense') => {
-                    setFormType(val)
+                  onValueChange={(val) => {
+                    setFormType((val || 'expense') as 'income' | 'expense')
                     setFormCategoryId('')
                   }}
                 >
@@ -573,7 +575,7 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-slate-350 text-xs">Categoria</Label>
-                <Select value={formCategoryId} onValueChange={setFormCategoryId}>
+                <Select value={formCategoryId} onValueChange={(val) => setFormCategoryId(val || '')}>
                   <SelectTrigger className="bg-slate-950 border-slate-850 rounded-xl">
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
@@ -600,7 +602,7 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-slate-350 text-xs">Método</Label>
-                <Select value={formPaymentMethod} onValueChange={setFormPaymentMethod}>
+                <Select value={formPaymentMethod} onValueChange={(val) => setFormPaymentMethod(val || '')}>
                   <SelectTrigger className="bg-slate-950 border-slate-850 rounded-xl">
                     <SelectValue />
                   </SelectTrigger>
@@ -616,7 +618,7 @@ export function TransactionsClient({ initialTransactions, categories, openNewMod
 
               <div className="space-y-2">
                 <Label className="text-slate-350 text-xs">Status</Label>
-                <Select value={formStatus} onValueChange={(val: 'paid' | 'pending') => setFormStatus(val)}>
+                <Select value={formStatus} onValueChange={(val) => setFormStatus((val || 'paid') as 'paid' | 'pending')}>
                   <SelectTrigger className="bg-slate-950 border-slate-850 rounded-xl">
                     <SelectValue />
                   </SelectTrigger>

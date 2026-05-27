@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useTransition, useEffect } from 'react'
+import React, { useState, useTransition } from 'react'
 import { createCategory, updateCategory, deleteCategory } from '@/actions/categories'
 import { toast } from 'sonner'
 import * as Icons from 'lucide-react'
@@ -54,12 +54,19 @@ const iconPresets = [
 ]
 
 export function CategoryIcon({ name, className }: { name: string; className?: string }) {
-  const IconComponent = (Icons as any)[name] || Tag
+  const IconComponent = (Icons as unknown as Record<string, React.ElementType>)[name] || Tag
   return <IconComponent className={className} />
 }
 
 export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
+  const [prevInitialCategories, setPrevInitialCategories] = useState(initialCategories)
   const [categories, setCategories] = useState<Category[]>(initialCategories)
+
+  if (initialCategories !== prevInitialCategories) {
+    setPrevInitialCategories(initialCategories)
+    setCategories(initialCategories)
+  }
+
   const [isPending, startTransition] = useTransition()
 
   // Modals Open State
@@ -75,10 +82,6 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
   const [formType, setFormType] = useState<'income' | 'expense'>('expense')
   const [formColor, setFormColor] = useState('#6b7280')
   const [formIcon, setFormIcon] = useState('Tag')
-
-  useEffect(() => {
-    setCategories(initialCategories)
-  }, [initialCategories])
 
   const resetForm = () => {
     setFormName('')
@@ -232,12 +235,14 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
         </div>
 
         <Dialog open={isAddOpen} onOpenChange={(val) => { setIsAddOpen(val); if(!val) resetForm(); }}>
-          <DialogTrigger asChild>
-            <Button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold gap-2 rounded-xl py-5 shadow-lg shadow-emerald-500/10">
-              <Plus className="h-4 w-4" />
-              <span>Nova Categoria</span>
-            </Button>
-          </DialogTrigger>
+          <DialogTrigger
+            render={
+              <Button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold gap-2 rounded-xl py-5 shadow-lg shadow-emerald-500/10">
+                <Plus className="h-4 w-4" />
+                <span>Nova Categoria</span>
+              </Button>
+            }
+          />
           
           <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-md rounded-2xl">
             <form onSubmit={handleAddSubmit} className="space-y-4">
@@ -259,7 +264,7 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
 
               <div className="space-y-2">
                 <Label className="text-slate-350 text-xs">Tipo de Categoria</Label>
-                <Select value={formType} onValueChange={(val: 'income' | 'expense') => setFormType(val)}>
+                <Select value={formType} onValueChange={(val) => setFormType((val || 'expense') as 'income' | 'expense')}>
                   <SelectTrigger className="bg-slate-950 border-slate-850 rounded-xl">
                     <SelectValue />
                   </SelectTrigger>
@@ -443,7 +448,7 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
             <Trash2 className="mx-auto h-10 w-10 text-red-500 mb-3" />
             <h3 className="text-lg font-bold">Excluir Categoria</h3>
             <p className="text-slate-400 text-xs mt-2 leading-relaxed">
-              Tem certeza que deseja excluir esta categoria? As transações vinculadas a ela passarão a constar como "Sem Categoria".
+              Tem certeza que deseja excluir esta categoria? As transações vinculadas a ela passarão a constar como &quot;Sem Categoria&quot;.
             </p>
           </div>
           <DialogFooter className="grid grid-cols-2 gap-2">

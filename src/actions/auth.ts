@@ -3,7 +3,12 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
-export async function login(state: any, formData: FormData) {
+export interface ActionState {
+  error?: string
+  success?: boolean
+}
+
+export async function login(state: ActionState, formData: FormData): Promise<ActionState> {
   const supabase = await createClient()
 
   const email = formData.get('email') as string
@@ -41,7 +46,7 @@ export async function login(state: any, formData: FormData) {
   redirect('/dashboard')
 }
 
-export async function signup(state: any, formData: FormData) {
+export async function signup(state: ActionState, formData: FormData): Promise<ActionState> {
   const supabase = await createClient()
 
   const email = formData.get('email') as string
@@ -75,7 +80,7 @@ export async function signOut() {
   redirect('/login')
 }
 
-export async function createCompany(state: any, formData: FormData) {
+export async function createCompany(state: ActionState, formData: FormData): Promise<ActionState> {
   const supabase = await createClient()
 
   const companyName = formData.get('companyName') as string

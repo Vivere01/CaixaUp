@@ -10,8 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   BarChart,
-  Bar,
-  Legend
+  Bar
 } from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -77,7 +76,8 @@ export function DashboardCharts({ data }: DashboardChartsProps) {
               <Tooltip 
                 contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px' }}
                 labelStyle={{ fontWeight: 'bold', color: '#fff' }}
-                formatter={(value: any) => [formatCurrency(Number(value)), '']}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                formatter={(value: any) => [formatCurrency(Number(value || 0)), '']}
               />
               <Area 
                 type="monotone" 
@@ -130,7 +130,8 @@ export function DashboardCharts({ data }: DashboardChartsProps) {
               <Tooltip 
                 contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px' }}
                 labelStyle={{ fontWeight: 'bold', color: '#fff' }}
-                formatter={(value: any) => [formatCurrency(Number(value)), 'Lucro']}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                formatter={(value: any) => [formatCurrency(Number(value || 0)), 'Lucro']}
               />
               <Bar 
                 dataKey="Lucro" 

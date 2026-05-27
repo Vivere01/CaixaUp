@@ -1,8 +1,13 @@
 'use client'
 
 import React, { useState, useTransition } from 'react'
+import { format } from 'date-fns'
 import Papa from 'papaparse'
 import * as XLSX from 'xlsx'
+
+const formatCurrency = (val: number) => {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val)
+}
 import { bulkCreateTransactions } from '@/actions/transactions'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -11,8 +16,7 @@ import {
   FileSpreadsheet, 
   ArrowRight, 
   Check, 
-  RefreshCw, 
-  AlertCircle 
+  RefreshCw
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -31,7 +35,7 @@ interface ImportClientProps {
 }
 
 interface ParsedRow {
-  [key: string]: any
+  [key: string]: unknown
 }
 
 interface TransactionItem {
@@ -89,7 +93,7 @@ export function ImportClient({ categories }: ImportClientProps) {
             toast.error('Erro ao ler os cabeçalhos do arquivo CSV.')
           }
         },
-        error: (err) => {
+        error: (err: Error) => {
           toast.error(`Erro no processamento do CSV: ${err.message}`)
         }
       })
@@ -97,7 +101,7 @@ export function ImportClient({ categories }: ImportClientProps) {
       const reader = new FileReader()
       reader.onload = (evt) => {
         try {
-          const bstr = evt.target?.result
+          const bstr = evt.target?.result as string
           const wb = XLSX.read(bstr, { type: 'binary' })
           const wsname = wb.SheetNames[0]
           const ws = wb.Sheets[wsname]
@@ -112,8 +116,9 @@ export function ImportClient({ categories }: ImportClientProps) {
           } else {
             toast.error('O arquivo Excel está vazio.')
           }
-        } catch (err: any) {
-          toast.error(`Erro ao decodificar Excel: ${err.message}`)
+        } catch (err: unknown) {
+          const error = err as Error
+          toast.error(`Erro ao decodificar Excel: ${error.message}`)
         }
       }
       reader.readAsBinaryString(selectedFile)
@@ -143,7 +148,7 @@ export function ImportClient({ categories }: ImportClientProps) {
     // Check if Excel serial number date
     if (!isNaN(Number(val)) && Number(val) > 30000) {
       try {
-        const dateObj = XLSX.JSX.utils ? new Date((Number(val) - 25569) * 86400 * 1000) : new Date(Date.UTC(0, 0, Number(val) - 1))
+        const dateObj = new Date((Number(val) - 25569) * 86400 * 1000)
         return format(dateObj, 'yyyy-MM-dd')
       } catch {}
     }
@@ -310,7 +315,7 @@ export function ImportClient({ categories }: ImportClientProps) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label className="text-slate-350 text-xs font-semibold">Descrição / Histórico</Label>
-                <Select value={descCol} onValueChange={setDescCol}>
+                <Select value={descCol} onValueChange={(val) => setDescCol(val || '')}>
                   <SelectTrigger className="bg-slate-950 border-slate-850 rounded-xl">
                     <SelectValue placeholder="Selecione..." />
                   </SelectTrigger>
@@ -324,7 +329,7 @@ export function ImportClient({ categories }: ImportClientProps) {
 
               <div className="space-y-2">
                 <Label className="text-slate-350 text-xs font-semibold">Valor da Transação</Label>
-                <Select value={amountCol} onValueChange={setAmountCol}>
+                <Select value={amountCol} onValueChange={(val) => setAmountCol(val || '')}>
                   <SelectTrigger className="bg-slate-950 border-slate-850 rounded-xl">
                     <SelectValue placeholder="Selecione..." />
                   </SelectTrigger>
@@ -338,7 +343,7 @@ export function ImportClient({ categories }: ImportClientProps) {
 
               <div className="space-y-2">
                 <Label className="text-slate-350 text-xs font-semibold">Data do Lançamento</Label>
-                <Select value={dateCol} onValueChange={setDateCol}>
+                <Select value={dateCol} onValueChange={(val) => setDateCol(val || '')}>
                   <SelectTrigger className="bg-slate-950 border-slate-850 rounded-xl">
                     <SelectValue placeholder="Selecione..." />
                   </SelectTrigger>
@@ -353,7 +358,7 @@ export function ImportClient({ categories }: ImportClientProps) {
 
             <div className="space-y-2">
               <Label className="text-slate-350 text-xs font-semibold">Como tratar a natureza da transação?</Label>
-              <Select value={defaultType} onValueChange={(val: any) => setDefaultType(val)}>
+              <Select value={defaultType} onValueChange={(val) => setDefaultType((val || 'deduce') as 'income' | 'expense' | 'deduce')}>
                 <SelectTrigger className="bg-slate-950 border-slate-850 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
@@ -435,7 +440,7 @@ export function ImportClient({ categories }: ImportClientProps) {
                         <TableCell>
                           <Select 
                             value={item.type} 
-                            onValueChange={(val: 'income' | 'expense') => handleTypeChangeOnRow(idx, val)}
+                            onValueChange={(val) => handleTypeChangeOnRow(idx, (val || 'expense') as 'income' | 'expense')}
                           >
                             <SelectTrigger className="bg-slate-950 border-slate-850 h-8 rounded-lg text-xs">
                               <SelectValue />
@@ -453,7 +458,7 @@ export function ImportClient({ categories }: ImportClientProps) {
                         <TableCell>
                           <Select 
                             value={item.category_id || 'none'} 
-                            onValueChange={(val) => handleCategoryChangeOnRow(idx, val === 'none' ? '' : val)}
+                            onValueChange={(val) => handleCategoryChangeOnRow(idx, val === 'none' ? '' : (val || ''))}
                           >
                             <SelectTrigger className="bg-slate-950 border-slate-850 h-8 rounded-lg text-xs">
                               <SelectValue placeholder="Selecione..." />

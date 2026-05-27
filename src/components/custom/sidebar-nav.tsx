@@ -9,8 +9,7 @@ import {
   Tags, 
   FileSpreadsheet, 
   LineChart, 
-  LogOut,
-  Building2
+  LogOut
 } from 'lucide-react'
 import { signOut } from '@/actions/auth'
 
