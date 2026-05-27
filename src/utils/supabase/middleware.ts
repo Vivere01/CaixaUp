@@ -27,60 +27,27 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // Get user session info
+  // This will refresh the session if it's expired
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   const pathname = request.nextUrl.pathname
 
-  // Protect dashboard and onboarding routes
-  if (pathname.startsWith('/dashboard') || pathname.startsWith('/onboarding') || pathname.startsWith('/app')) {
+  // Basic Protection: Only check if user is logged in for restricted routes
+  if (pathname.startsWith('/dashboard') || pathname.startsWith('/onboarding')) {
     if (!user) {
       const url = request.nextUrl.clone()
       url.pathname = '/login'
       return NextResponse.redirect(url)
     }
-
-    // Check if onboarding is needed
-    if (user && !pathname.startsWith('/onboarding')) {
-      try {
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('company_id')
-          .eq('id', user.id)
-          .single()
-
-        if (!error && !profile?.company_id) {
-          const url = request.nextUrl.clone()
-          url.pathname = '/onboarding'
-          return NextResponse.redirect(url)
-        }
-      } catch (e) {
-        console.error('Middleware profile check error:', e)
-      }
-    }
   }
 
-  // Redirect to dashboard/onboarding if logged in and accessing login/signup
+  // Auth Page Redirection: If logged in, don't show login/signup
   if (user && (pathname.startsWith('/login') || pathname.startsWith('/signup'))) {
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user.id)
-        .single()
-
-      const url = request.nextUrl.clone()
-      if (profile?.company_id) {
-        url.pathname = '/dashboard'
-      } else {
-        url.pathname = '/onboarding'
-      }
-      return NextResponse.redirect(url)
-    } catch (e) {
-      console.error('Middleware auth redirect error:', e)
-    }
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return NextResponse.redirect(url)
   }
 
   return supabaseResponse
