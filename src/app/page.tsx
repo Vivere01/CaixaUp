@@ -2,315 +2,307 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { 
-  ArrowRight, 
   TrendingUp, 
-  Shield, 
-  Cpu, 
-  FileSpreadsheet, 
-  PieChart, 
-  LineChart,
-  Users, 
+  Menu, 
+  ShieldCheck, 
   Zap, 
-  CheckCircle2, 
-  Receipt,
-  FileCheck,
+  Wallet, 
+  BarChart3, 
+  LayoutDashboard, 
+  Receipt, 
+  Tags, 
+  FileSpreadsheet, 
+  LineChart,
+  ArrowRight,
   ChevronRight,
-  Activity
+  Clock
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 
-const fadeIn = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
-}
-
-const stagger = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-}
-
 export default function LandingPage() {
-  const { scrollYProgress } = useScroll()
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
-  const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.98])
-
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-sky-100 selection:text-sky-900 overflow-x-hidden">
-      {/* Header / Apple Style Navbar */}
-      <motion.header 
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100 px-6 py-4"
-      >
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group cursor-pointer">
-            <Image 
-              src="/logo.png" 
-              alt="CaixaUp Logo" 
-              width={32} 
-              height={32} 
-              className="rounded-lg transition-transform group-hover:scale-110"
-            />
-            <span className="font-bold text-xl tracking-tight text-slate-900">
-              Caixa<span className="text-sky-500">Up</span>
-            </span>
-          </Link>
+    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden">
+      {/* HEADER */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100 px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <Link href="/" className="flex items-center gap-3 group cursor-pointer">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg">
+                <TrendingUp className="text-white w-6 h-6" />
+              </div>
+              <span className="font-bold text-2xl tracking-tight text-[#0A102F]">
+                Caixa<span className="text-[#1677FF]">Up</span>
+              </span>
+            </Link>
 
-          <nav className="hidden md:flex items-center gap-8 text-[13px] text-slate-500 font-medium">
-            {['Funcionalidades', 'Como Funciona', 'DRE', 'Planos'].map((item) => (
-              <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="hover:text-sky-600 transition-colors">
-                {item}
-              </a>
-            ))}
-          </nav>
+            <nav className="hidden md:flex items-center gap-8 text-sm text-slate-500 font-semibold">
+              <a href="#funcionalidades" className="hover:text-[#1677FF] transition-colors">Funcionalidades</a>
+              <a href="#dre" className="hover:text-[#1677FF] transition-colors">DRE</a>
+              <a href="#planos" className="hover:text-[#1677FF] transition-colors">Planos</a>
+            </nav>
+          </div>
 
-          <div className="flex items-center gap-6">
-            <Link href="/login" className="text-[13px] font-medium text-slate-500 hover:text-slate-900 transition-colors">
+          <div className="flex items-center gap-4">
+            <Link href="/login" className="hidden sm:block text-slate-500 hover:text-slate-900 font-semibold transition-colors mr-4">
               Entrar
             </Link>
             <Link href="/signup">
-              <Button size="sm" className="bg-sky-500 text-white hover:bg-sky-600 text-[13px] font-bold px-5 py-2 rounded-full transition-all shadow-lg shadow-sky-500/20">
-                Começar
-              </Button>
+              <button className="bg-[#1677FF] hover:bg-[#005EEB] transition-all text-white px-6 py-3 rounded-full font-semibold shadow-xl shadow-blue-500/20">
+                Começar Grátis
+              </button>
             </Link>
+            <button className="md:hidden p-2 text-slate-600">
+              <Menu className="w-6 h-6" />
+            </button>
           </div>
         </div>
-      </motion.header>
+      </header>
 
-      {/* Hero Section */}
-      <section className="relative pt-48 pb-32 px-6 flex flex-col items-center text-center z-10">
-        <motion.div 
-          style={{ opacity, scale }}
-          className="max-w-5xl mx-auto space-y-10"
-        >
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 border border-sky-100 text-sky-600 text-[12px] font-bold tracking-wide uppercase"
+      <main className="max-w-7xl mx-auto px-6 pt-40 pb-20">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          
+          {/* LEFT COLUMN */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
           >
-            <Zap className="h-3.5 w-3.5" />
-            <span>Finanças com Clareza</span>
+            {/* BADGE */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-200 bg-blue-50 text-[#1677FF] text-sm font-semibold mb-8">
+              <Zap className="w-4 h-4" />
+              <span>Finanças com Clareza absoluta</span>
+            </div>
+
+            {/* TITLE */}
+            <h1 className="text-6xl md:text-7xl font-black tracking-tighter leading-[1.1] text-[#0A102F]">
+              Decisões baseadas <br />
+              <span className="text-[#1677FF]">em dados reais.</span>
+            </h1>
+
+            {/* DESCRIPTION */}
+            <p className="mt-8 text-xl text-slate-500 leading-relaxed max-w-xl">
+              Transforme dados bancários em decisões estratégicas.
+              Controle seu DRE, fluxo de caixa e margens com a simplicidade que você sempre quis.
+            </p>
+
+            {/* CTAS */}
+            <div className="mt-10 flex flex-col sm:flex-row items-center gap-4">
+              <Link href="/signup" className="w-full sm:w-auto">
+                <button className="w-full group bg-[#1677FF] hover:bg-[#005EEB] transition-all text-white px-8 py-4 rounded-full font-semibold flex items-center justify-center gap-2 shadow-2xl shadow-blue-500/30 text-lg">
+                  Criar Conta Grátis
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </Link>
+              <button className="w-full sm:w-auto px-8 py-4 rounded-full border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition-colors text-lg">
+                Ver demonstração
+              </button>
+            </div>
+
+            {/* FEATURES LIST */}
+            <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 gap-8 border-t border-slate-100 pt-10">
+              <Feature 
+                icon={<ShieldCheck className="w-5 h-5" />}
+                title="Segurança"
+                desc="Seus dados protegidos por RLS"
+              />
+              <Feature 
+                icon={<Zap className="w-5 h-5" />}
+                title="Decisões Ágeis"
+                desc="Visualize seu lucro em tempo real"
+              />
+            </div>
           </motion.div>
 
-          <motion.h1 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="text-7xl md:text-[8.5rem] font-black tracking-tighter leading-[0.8] text-slate-900"
+          {/* RIGHT COLUMN - DASHBOARD MOCKUP */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 40 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="relative"
           >
-            Gestão <br />
-            <span className="bg-gradient-to-b from-sky-500 to-sky-700 bg-clip-text text-transparent">
-              Inteligente.
-            </span>
-          </motion.h1>
-
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 1 }}
-            className="text-slate-500 text-xl md:text-2xl max-w-3xl mx-auto font-medium leading-relaxed tracking-tight"
-          >
-            Transforme dados bancários em decisões estratégicas. 
-            Controle seu DRE, fluxo de caixa e margens com a simplicidade que você sempre quis.
-          </motion.p>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6"
-          >
-            <Link href="/signup" className="w-full sm:w-auto">
-              <Button className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold px-10 py-7 rounded-2xl text-lg transition-transform active:scale-95 flex items-center justify-center gap-2 shadow-2xl">
-                Criar Conta Grátis
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-            </Link>
-            <a href="#dashboard-preview" className="group flex items-center gap-2 text-slate-600 font-bold hover:text-sky-600 transition-colors text-lg">
-              Ver demonstração
-              <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </a>
-          </motion.div>
-        </motion.div>
-      </section>
-
-      {/* Product Showcase */}
-      <section id="dashboard-preview" className="px-6 py-20 relative z-10">
-        <motion.div 
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="max-w-6xl mx-auto"
-        >
-          <div className="bg-white border border-slate-100 rounded-[3.5rem] p-4 md:p-16 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden relative group">
-            <div className="absolute inset-0 bg-gradient-to-b from-sky-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            {/* DECORATIVE BACKGROUND GLOW */}
+            <div className="absolute -top-20 -right-20 w-80 h-80 bg-blue-100 rounded-full blur-[100px] opacity-60" />
             
-            {/* Mock Dashboard Header */}
-            <div className="flex items-center justify-between mb-16 border-b border-slate-50 pb-10">
-              <div className="space-y-2">
-                <p className="text-[12px] font-black uppercase tracking-[0.3em] text-sky-500">Analytics Pro</p>
-                <h2 className="text-4xl font-bold tracking-tight text-slate-900">Visão Geral do Negócio</h2>
-              </div>
-              <div className="h-14 w-14 rounded-2xl bg-sky-50 border border-sky-100 flex items-center justify-center shadow-sm">
-                <Activity className="h-6 w-6 text-sky-500" />
-              </div>
-            </div>
+            {/* DASHBOARD CONTAINER */}
+            <div className="relative rounded-[32px] border border-slate-200 bg-white shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] overflow-hidden">
+              <div className="grid grid-cols-[80px_1fr] h-[600px]">
+                
+                {/* SIDEBAR */}
+                <div className="border-r border-slate-100 bg-slate-50/50 flex flex-col items-center py-8 gap-4">
+                  <SidebarIcon icon={<LayoutDashboard size={24} />} active />
+                  <SidebarIcon icon={<BarChart3 size={24} />} />
+                  <SidebarIcon icon={<Receipt size={24} />} />
+                  <SidebarIcon icon={<FileSpreadsheet size={24} />} />
+                </div>
 
-            {/* Floating KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-              {[
-                { label: 'Faturamento', value: 'R$ 124.500', trend: '+12%', color: 'text-sky-600', bg: 'bg-sky-50' },
-                { label: 'Custos', value: 'R$ 48.200', trend: '-2%', color: 'text-slate-600', bg: 'bg-slate-50' },
-                { label: 'Margem', value: '61.2%', trend: 'Saudável', color: 'text-blue-600', bg: 'bg-blue-50' },
-              ].map((kpi, i) => (
-                <motion.div 
-                  key={i}
-                  whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                  className={`${kpi.bg} border border-slate-100/50 p-8 rounded-[2.5rem]`}
-                >
-                  <p className="text-[12px] font-bold text-slate-400 uppercase tracking-widest">{kpi.label}</p>
-                  <p className={`text-4xl font-black mt-3 ${kpi.color}`}>{kpi.value}</p>
-                  <div className="flex items-center gap-2 mt-4">
-                    <div className={`h-1.5 w-1.5 rounded-full ${kpi.color.replace('text', 'bg')}`} />
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{kpi.trend} este mês</span>
+                {/* CONTENT AREA */}
+                <div className="p-8 overflow-y-auto">
+                  {/* TOP HEADER */}
+                  <div className="flex items-center justify-between mb-8">
+                    <div>
+                      <h3 className="text-xl font-bold text-[#0A102F]">Analytics Pro</h3>
+                      <p className="text-slate-500 mt-1">Visão Geral do Negócio</p>
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                      JD
+                    </div>
                   </div>
-                </motion.div>
-              ))}
-            </div>
 
-            {/* DRE Mock */}
-            <div className="bg-slate-50/50 rounded-[3rem] p-10 border border-slate-100 relative overflow-hidden group/dre">
-              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover/dre:opacity-10 transition-opacity">
-                <FileCheck className="h-24 w-24 text-sky-500" />
-              </div>
-              <div className="flex items-center gap-4 mb-10">
-                <div className="h-10 w-10 rounded-xl bg-sky-100 flex items-center justify-center">
-                  <LineChart className="h-5 w-5 text-sky-600" />
-                </div>
-                <h3 className="font-bold text-xl tracking-tight text-slate-900">DRE Automático</h3>
-              </div>
-              <div className="space-y-6 relative z-10">
-                {[
-                  { label: '(+) Receita Bruta', val: 'R$ 124.500', op: 1 },
-                  { label: '(-) Deduções e Impostos', val: 'R$ 7.470', op: 0 },
-                  { label: '(=) Receita Líquida', val: 'R$ 117.030', op: 1 },
-                  { label: '(-) Custos de Mercadoria', val: 'R$ 40.730', op: 0 },
-                  { label: '(=) Lucro Bruto', val: 'R$ 76.300', op: 1, highlight: true },
-                ].map((row, i) => (
-                  <div key={i} className={`flex justify-between py-4 items-center group/row ${row.highlight ? 'pt-8 mt-4 border-t border-slate-200' : 'border-b border-slate-100'}`}>
-                    <span className={`${row.highlight ? 'font-black text-slate-900 text-lg' : 'text-slate-500 text-sm font-medium'}`}>
-                      {row.label}
-                    </span>
-                    <span className={`font-mono transition-all ${row.highlight ? 'text-sky-600 text-3xl font-black' : (row.op ? 'text-slate-700 text-base font-bold' : 'text-red-500 text-base font-bold')}`}>
-                      {row.val}
-                    </span>
+                  {/* KPI GRID */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <KPI
+                      title="Saldo Total"
+                      value="R$ 128.420"
+                      positive="+12%"
+                    />
+                    <KPI
+                      title="Entradas"
+                      value="R$ 84.200"
+                      positive="+8%"
+                    />
+                    <KPI
+                      title="Saídas"
+                      value="R$ 12.400"
+                      negative="-2%"
+                    />
+                    <KPI
+                      title="Margem Líquida"
+                      value="24.2%"
+                      positive="Saudável"
+                    />
                   </div>
-                ))}
+
+                  {/* CHART AREA */}
+                  <div className="mt-8 rounded-3xl bg-white p-6 border border-slate-100 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-bold text-slate-800">Fluxo de Caixa</h4>
+                      <span className="text-sm text-slate-400 font-medium italic">Últimos 30 dias</span>
+                    </div>
+                    <div className="h-32 flex items-end gap-1">
+                      <svg viewBox="0 0 500 200" className="w-full h-full">
+                        <path
+                          d="M0 170 C 80 120, 120 100, 180 130 S 300 180, 380 90 S 470 40, 500 80"
+                          fill="none"
+                          stroke="#1677FF"
+                          strokeWidth="6"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* TRANSACTIONS LIST */}
+                  <div className="mt-8 rounded-3xl bg-white border border-slate-100 p-6 shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                      <h4 className="font-bold text-slate-800">Transações recentes</h4>
+                      <button className="text-[#1677FF] font-medium text-sm">Ver todas</button>
+                    </div>
+                    <div className="space-y-4">
+                      <Transaction
+                        name="Meta Ads"
+                        date="Hoje"
+                        value="- R$ 1.240"
+                      />
+                      <Transaction
+                        name="Recebimento Cliente"
+                        date="Ontem"
+                        value="+ R$ 8.200"
+                        positive
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Features */}
-      <section id="funcionalidades" className="py-32 px-6 bg-slate-50/30">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-24 space-y-4">
-            <motion.h2 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              className="text-4xl md:text-5xl font-black tracking-tight text-slate-900"
-            >
-              Simples. Visual. <br />
-              <span className="text-slate-400 font-bold">Essencial para seu negócio.</span>
-            </motion.h2>
-          </div>
-
-          <motion.div 
-            variants={stagger}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {[
-              { icon: FileSpreadsheet, title: 'Importação Veloz', desc: 'Arraste seu extrato bancário e veja a mágica acontecer em segundos.', color: 'sky' },
-              { icon: LineChart, title: 'DRE Real-Time', desc: 'Saiba exatamente quanto sua empresa está lucrando hoje, sem esperar o contador.', color: 'blue' },
-              { icon: PieChart, title: 'Margens de Lucro', desc: 'Identifique quais produtos ou serviços trazem o melhor retorno para você.', color: 'indigo' },
-              { icon: Users, title: 'Acesso Compartilhado', desc: 'Dê acesso ao seu sócio ou contador com permissões customizadas.', color: 'sky' },
-              { icon: Shield, title: 'Segurança Máxima', desc: 'Seus dados protegidos com criptografia de ponta e isolamento total.', color: 'blue' },
-              { icon: Cpu, title: 'Inteligência Financeira', desc: 'Receba alertas automáticos sobre tendências e riscos no seu caixa.', color: 'indigo' },
-            ].map((f, i) => (
-              <motion.div 
-                key={i}
-                variants={fadeIn}
-                whileHover={{ y: -12 }}
-                className="bg-white border border-slate-100 p-12 rounded-[3rem] flex flex-col items-start gap-8 transition-all duration-500 group shadow-sm hover:shadow-xl hover:shadow-sky-500/5"
-              >
-                <div className={`w-16 h-16 bg-${f.color}-50 rounded-[1.5rem] flex items-center justify-center text-${f.color}-500 group-hover:scale-110 transition-transform duration-500`}>
-                  <f.icon className="h-8 w-8" />
-                </div>
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-bold tracking-tight text-slate-900">{f.title}</h3>
-                  <p className="text-slate-500 text-base leading-relaxed font-medium">{f.desc}</p>
-                </div>
-              </motion.div>
-            ))}
           </motion.div>
         </div>
-      </section>
+      </main>
 
-      {/* CTA Section */}
-      <section className="py-40 px-6 relative overflow-hidden bg-slate-900">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-sky-500/10 blur-[120px] rounded-full" />
-        <div className="max-w-4xl mx-auto text-center relative z-10 space-y-12">
-          <motion.h2 
-            initial={{ scale: 0.9, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            className="text-5xl md:text-7xl font-black tracking-tighter text-white"
-          >
-            Assuma o controle total <br /> 
-            do seu faturamento.
-          </motion.h2>
-          <motion.div 
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Link href="/signup">
-              <Button className="bg-sky-500 text-white hover:bg-sky-400 font-bold px-12 py-8 rounded-full text-xl transition-all shadow-2xl shadow-sky-500/20">
-                Começar agora gratuitamente
-              </Button>
-            </Link>
-          </motion.div>
-          <p className="text-white/30 text-xs font-bold uppercase tracking-[0.3em]">
-            Configuração em 2 minutos • Sem cartão de crédito • Suporte em Português
-          </p>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-20 px-6 border-t border-slate-100 bg-white z-10 relative">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-slate-400 font-bold text-[11px] uppercase tracking-widest">
+      <footer className="py-20 border-t border-slate-100 mt-20 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-slate-400 font-bold text-[11px] uppercase tracking-widest">
           <div className="flex items-center gap-3">
-            <Image src="/logo.png" alt="Logo" width={20} height={20} className="opacity-50" />
+             <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
+                <TrendingUp className="text-white w-4 h-4" />
+              </div>
             <span>CaixaUp © 2026</span>
           </div>
           <div className="flex gap-10">
-            <a href="#" className="hover:text-sky-600 transition-colors">Termos</a>
-            <a href="#" className="hover:text-sky-600 transition-colors">Privacidade</a>
-            <a href="/login" className="text-slate-900 hover:text-sky-600 transition-colors">Login</a>
+            <a href="#" className="hover:text-blue-500 transition-colors">Termos</a>
+            <a href="#" className="hover:text-blue-500 transition-colors">Privacidade</a>
+            <Link href="/login" className="text-slate-900 hover:text-blue-500 transition-colors">Login</Link>
           </div>
         </div>
       </footer>
+    </div>
+  )
+}
+
+// HELPER COMPONENTS FOR THE DESIGN
+
+function Feature({ icon, title, desc }: any) {
+  return (
+    <div className="flex items-start gap-4">
+      <div className="w-11 h-11 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-[#1677FF]">
+        {icon}
+      </div>
+      <div>
+        <h4 className="font-bold text-[#0A102F]">{title}</h4>
+        <p className="text-sm text-slate-500 font-medium">{desc}</p>
+      </div>
+    </div>
+  )
+}
+
+function SidebarIcon({ icon, active }: any) {
+  return (
+    <button
+      className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all
+      ${active
+          ? "bg-[#1677FF] text-white shadow-xl shadow-blue-500/30"
+          : "text-slate-400 hover:bg-slate-100"
+      }`}
+    >
+      {icon}
+    </button>
+  )
+}
+
+function KPI({ title, value, positive, negative }: any) {
+  return (
+    <div className="rounded-3xl border border-slate-100 bg-slate-50/50 p-6">
+      <p className="text-sm text-slate-500 font-medium">{title}</p>
+      <div className="flex items-center justify-between mt-2">
+        <h4 className="text-xl font-bold text-slate-900">{value}</h4>
+        {positive && (
+          <span className="text-green-500 font-bold text-sm bg-green-50 px-2 py-0.5 rounded-lg">{positive}</span>
+        )}
+        {negative && (
+          <span className="text-red-500 font-bold text-sm bg-red-50 px-2 py-0.5 rounded-lg">{negative}</span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function Transaction({ name, date, value, positive }: any) {
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center
+          ${positive ? "bg-green-50 text-green-500" : "bg-slate-50 text-slate-500"}`}>
+          <Wallet className="w-5 h-5" />
+        </div>
+        <div>
+          <h4 className="font-bold text-slate-800 text-sm">{name}</h4>
+          <p className="text-sm text-slate-500 font-medium">{date}</p>
+        </div>
+      </div>
+      <span className={`font-bold text-sm ${positive ? "text-green-500" : "text-slate-900"}`}>
+        {value}
+      </span>
     </div>
   )
 }
