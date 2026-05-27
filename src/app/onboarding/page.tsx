@@ -2,10 +2,10 @@
 
 import React, { useActionState, startTransition } from 'react'
 import { createCompany } from '@/actions/auth'
-import { ArrowRight, Building2, Sparkles, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import Link from 'next/link'
 
 const initialState = {
   error: '',
@@ -23,46 +23,48 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-white font-sans antialiased relative overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute top-[20%] left-[20%] w-[50%] h-[50%] rounded-full bg-emerald-500/5 blur-[130px]" />
-      <div className="absolute bottom-[20%] right-[20%] w-[40%] h-[40%] rounded-full bg-blue-500/5 blur-[120px]" />
+    <div className="min-h-screen bg-surface flex flex-col items-center justify-center p-6 text-on-surface font-jakarta relative overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[30%] h-[30%] rounded-full bg-primary/5 blur-[100px] pointer-events-none" />
 
       <div className="w-full max-w-lg relative z-10 space-y-8">
         {/* Header/Logo */}
-        <div className="flex items-center justify-center gap-2">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-emerald-400 to-blue-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <span className="font-extrabold text-xl text-slate-950">C</span>
-          </div>
-          <span className="font-bold text-2xl tracking-tight">
-            Caixa<span className="text-emerald-400">Up</span>
-          </span>
-        </div>
-
-        {/* Form Container */}
-        <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800 p-8 rounded-3xl shadow-2xl space-y-6">
+        <div className="flex flex-col items-center gap-4 mb-8">
+          <Link href="/" className="flex items-center gap-3 group">
+            <span className="material-symbols-outlined text-primary text-[40px]">bar_chart_4_bars</span>
+            <span className="text-3xl font-extrabold text-primary font-display-hero">CaixaUp</span>
+          </Link>
           <div className="text-center space-y-2">
-            <div className="mx-auto w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center mb-4">
-              <Sparkles className="h-6 w-6" />
-            </div>
-            <h2 className="text-2xl font-bold">Vamos configurar sua conta</h2>
-            <p className="text-slate-400 text-sm">
+            <h1 className="text-2xl font-bold text-on-surface">Configuração Final</h1>
+            <p className="text-on-surface-variant text-sm">
               Crie o ambiente da sua empresa para ter acesso total ao painel.
             </p>
           </div>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Form Container */}
+        <div className="bg-white border border-outline-variant/20 p-10 rounded-[2.5rem] shadow-xl shadow-primary/5 space-y-8">
+          <div className="text-center">
+            <div className="mx-auto w-16 h-16 bg-primary/5 border border-primary/10 text-primary rounded-2xl flex items-center justify-center mb-4">
+              <span className="material-symbols-outlined text-[32px]">domain</span>
+            </div>
+            <h2 className="text-xl font-bold text-on-surface">Dados da Empresa</h2>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-8">
             {state?.error && (
-              <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm font-medium">
+              <div className="bg-error-container/50 border border-error/20 text-error p-4 rounded-2xl text-sm font-semibold flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+                <span className="material-symbols-outlined text-[20px]">error</span>
                 {state.error}
               </div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="companyName" className="text-slate-300 font-semibold">Nome da Empresa</Label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
-                  <Building2 className="h-4 w-4" />
+              <Label htmlFor="companyName" className="text-on-surface font-semibold ml-1">Nome da Empresa</Label>
+              <div className="relative group">
+                <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-outline group-focus-within:text-primary transition-colors">
+                  <span className="material-symbols-outlined text-[20px]">business</span>
                 </span>
                 <Input
                   id="companyName"
@@ -70,40 +72,54 @@ export default function OnboardingPage() {
                   type="text"
                   placeholder="Ex: CaixaUp Consultoria LTDA"
                   required
-                  className="pl-10 bg-slate-900 border-slate-800 text-white placeholder-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20 rounded-xl"
+                  className="pl-12 py-6 bg-surface-container-lowest border-outline-variant/30 text-on-surface placeholder-outline focus:border-primary focus:ring-primary/20 rounded-2xl transition-all"
                 />
               </div>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-[11px] text-on-surface-variant font-medium mt-2 px-1">
                 Este nome será usado para gerar seus relatórios, notas e filtros de DRE.
               </p>
             </div>
 
             {/* List of automatic features configured during onboarding */}
-            <div className="bg-slate-950/50 border border-slate-850 p-4 rounded-2xl space-y-3">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">O que estamos preparando:</span>
-              <div className="flex items-center gap-2.5 text-xs text-slate-400">
-                <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0" />
-                <span>Espaço de trabalho isolado via RLS (Segurança Bancária)</span>
-              </div>
-              <div className="flex items-center gap-2.5 text-xs text-slate-400">
-                <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0" />
-                <span>Instalação padrão de 13 categorias financeiras essenciais</span>
-              </div>
-              <div className="flex items-center gap-2.5 text-xs text-slate-400">
-                <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0" />
-                <span>Estrutura de DRE inteligente em conformidade contábil</span>
+            <div className="bg-surface p-6 rounded-3xl space-y-4 border border-outline-variant/10">
+              <span className="text-[10px] font-bold text-outline-variant uppercase tracking-widest block">O que estamos preparando:</span>
+              <div className="space-y-3">
+                {[
+                  { icon: 'lock', text: 'Segurança Bancária via RLS' },
+                  { icon: 'category', text: 'Categorias financeiras essenciais' },
+                  { icon: 'analytics', text: 'Estrutura de DRE inteligente' }
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 text-xs text-on-surface font-medium">
+                    <span className="material-symbols-outlined text-primary text-[18px]">{item.icon}</span>
+                    <span>{item.text}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <Button
+            <button
               type="submit"
               disabled={isPending}
-              className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold py-6 rounded-xl transition shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2"
+              className="w-full bg-primary text-on-primary font-bold py-4 rounded-full hover:bg-primary-container transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-95 disabled:opacity-70 disabled:pointer-events-none"
             >
-              {isPending ? 'Configurando tudo...' : 'Criar minha Empresa'}
-              {!isPending && <ArrowRight className="h-4 w-4 text-slate-950" />}
-            </Button>
+              {isPending ? (
+                <span className="flex items-center gap-2">
+                  <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
+                  Configurando...
+                </span>
+              ) : (
+                <>
+                  Criar minha Empresa
+                  <span className="material-symbols-outlined">rocket_launch</span>
+                </>
+              )}
+            </button>
           </form>
+        </div>
+
+        {/* Footer info */}
+        <div className="text-center text-on-surface-variant/40 text-[10px] font-bold uppercase tracking-[0.2em]">
+          Ambiente Seguro • Encriptação de Ponta a Ponta
         </div>
       </div>
     </div>

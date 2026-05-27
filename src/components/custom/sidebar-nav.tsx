@@ -3,14 +3,6 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { 
-  LayoutDashboard, 
-  Receipt, 
-  Tags, 
-  FileSpreadsheet, 
-  LineChart, 
-  LogOut
-} from 'lucide-react'
 import { signOut } from '@/actions/auth'
 
 interface SidebarNavProps {
@@ -22,44 +14,45 @@ export function SidebarNav({ companyName, userName }: SidebarNavProps) {
   const pathname = usePathname()
 
   const links = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Transações', href: '/dashboard/transactions', icon: Receipt },
-    { name: 'Categorias', href: '/dashboard/categories', icon: Tags },
-    { name: 'Importar Extrato', href: '/dashboard/import', icon: FileSpreadsheet },
-    { name: 'DRE Relatório', href: '/dashboard/dre', icon: LineChart },
+    { name: 'Dashboard', href: '/dashboard', icon: 'grid_view' },
+    { name: 'Transações', href: '/dashboard/transactions', icon: 'receipt_long' },
+    { name: 'Categorias', href: '/dashboard/categories', icon: 'sell' },
+    { name: 'Importar', href: '/dashboard/import', icon: 'upload_file' },
+    { name: 'Relatório DRE', href: '/dashboard/dre', icon: 'analytics' },
   ]
 
   return (
-    <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between h-screen sticky top-0 text-white">
+    <aside className="w-72 bg-white border-r border-outline-variant/20 flex flex-col justify-between h-screen sticky top-0 font-jakarta shadow-sm z-40">
       {/* Upper Section */}
-      <div className="p-6 space-y-8 flex-1">
+      <div className="flex-1 overflow-y-auto px-6 py-8 space-y-10">
         {/* Company Header */}
-        <div className="flex items-center gap-3 pb-6 border-b border-slate-800">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-emerald-400 to-blue-500 flex items-center justify-center text-slate-950 font-bold text-base flex-shrink-0">
-            {companyName.charAt(0).toUpperCase()}
+        <div className="flex items-center gap-3 pb-6 border-b border-outline-variant/10">
+          <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary flex-shrink-0 border border-primary/10 shadow-inner">
+            <span className="material-symbols-outlined text-[28px]">bar_chart_4_bars</span>
           </div>
           <div className="min-w-0">
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest block">EMPRESA</span>
-            <span className="font-bold text-sm text-slate-200 block truncate">{companyName}</span>
+            <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] block mb-0.5">CaixaUp</span>
+            <span className="font-bold text-sm text-on-surface block truncate leading-none">{companyName}</span>
           </div>
         </div>
 
         {/* Navigation Links */}
-        <nav className="space-y-1">
+        <nav className="space-y-1.5">
           {links.map((link) => {
-            const Icon = link.icon
             const isActive = pathname === link.href
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition ${
+                className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all group ${
                   isActive 
-                    ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/10' 
-                    : 'text-slate-400 hover:text-white hover:bg-slate-850'
+                    ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' 
+                    : 'text-on-surface-variant hover:text-primary hover:bg-primary/5'
                 }`}
               >
-                <Icon className={`h-4 w-4 ${isActive ? 'text-slate-950' : 'text-slate-400'}`} />
+                <span className={`material-symbols-outlined text-[22px] ${isActive ? 'text-on-primary' : 'text-outline group-hover:text-primary'}`}>
+                  {link.icon}
+                </span>
                 <span>{link.name}</span>
               </Link>
             )
@@ -68,22 +61,25 @@ export function SidebarNav({ companyName, userName }: SidebarNavProps) {
       </div>
 
       {/* User Section (Bottom) */}
-      <div className="p-6 border-t border-slate-800 space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-semibold text-slate-300">
+      <div className="p-6 bg-surface-container-lowest border-t border-outline-variant/10 space-y-4">
+        <div className="flex items-center gap-3 px-2">
+          <div className="h-10 w-10 rounded-xl bg-secondary-container/30 flex items-center justify-center text-secondary font-bold border border-secondary/10">
             {userName.charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0">
-            <span className="font-bold text-xs text-slate-200 block truncate">{userName}</span>
-            <span className="text-[10px] text-slate-500 block">Usuário Ativo</span>
+            <span className="font-bold text-xs text-on-surface block truncate leading-none mb-1">{userName}</span>
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-tertiary shadow-sm shadow-tertiary/20" />
+              <span className="text-[10px] font-bold text-on-surface-variant/60 uppercase tracking-wider">Online</span>
+            </div>
           </div>
         </div>
 
         <button
           onClick={() => signOut()}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold text-red-400 hover:text-red-300 hover:bg-red-500/5 border border-transparent hover:border-red-500/10 transition"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-error hover:bg-error-container/50 transition-all border border-transparent hover:border-error/10 active:scale-95"
         >
-          <LogOut className="h-4 w-4" />
+          <span className="material-symbols-outlined text-[18px]">logout</span>
           <span>Sair da Conta</span>
         </button>
       </div>

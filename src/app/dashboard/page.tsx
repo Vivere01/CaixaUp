@@ -2,22 +2,6 @@ import React from 'react'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { startOfMonth, endOfMonth, subMonths, format } from 'date-fns'
-import { 
-  TrendingUp, 
-  Receipt, 
-  DollarSign, 
-  PieChart, 
-  ArrowUpRight, 
-  ArrowDownRight,
-  Plus, 
-  Upload, 
-  Activity,
-  AlertTriangle,
-  CheckCircle,
-  Info
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DashboardCharts } from '@/components/custom/dashboard-charts'
 import { generateInsights } from '@/utils/insights'
 
@@ -31,49 +15,39 @@ const formatCurrency = (val: number) => {
 export default async function DashboardPage() {
   const supabase = await createClient()
 
-  // 1. Get dates
   const now = new Date()
-  
   const currentMonthStart = format(startOfMonth(now), 'yyyy-MM-dd')
   const currentMonthEnd = format(endOfMonth(now), 'yyyy-MM-dd')
-
   const prevMonthStart = format(startOfMonth(subMonths(now, 1)), 'yyyy-MM-dd')
   const prevMonthEnd = format(endOfMonth(subMonths(now, 1)), 'yyyy-MM-dd')
-
   const sixMonthsAgo = format(startOfMonth(subMonths(now, 5)), 'yyyy-MM-dd')
 
-  // 2. Fetch current month's transactions
   const { data: currentTransactions } = await supabase
     .from('transactions')
     .select('*, categories(*)')
     .gte('date', currentMonthStart)
     .lte('date', currentMonthEnd)
 
-  // 3. Fetch previous month's transactions
   const { data: prevTransactions } = await supabase
     .from('transactions')
     .select('*, categories(*)')
     .gte('date', prevMonthStart)
     .lte('date', prevMonthEnd)
 
-  // 4. Fetch last 6 months of transactions (for charts)
   const { data: chartTransactions } = await supabase
     .from('transactions')
     .select('amount, type, date')
     .gte('date', sixMonthsAgo)
     .order('date', { ascending: true })
 
-  // 5. Fetch recent transactions (limit 5)
   const { data: recentTransactions } = await supabase
     .from('transactions')
     .select('*, categories(*)')
     .order('date', { ascending: false })
     .limit(5)
 
-  // 6. Aggregate Current Month
   let faturamento = 0
   let despesas = 0
-
   currentTransactions?.forEach(tx => {
     if (tx.type === 'income') faturamento += Number(tx.amount)
     else despesas += Number(tx.amount)
@@ -82,10 +56,8 @@ export default async function DashboardPage() {
   const lucro = faturamento - despesas
   const margem = faturamento > 0 ? (lucro / faturamento) * 100 : 0
 
-  // 7. Aggregate Previous Month
   let prevFaturamento = 0
   let prevDespesas = 0
-
   prevTransactions?.forEach(tx => {
     if (tx.type === 'income') prevFaturamento += Number(tx.amount)
     else prevDespesas += Number(tx.amount)
@@ -94,37 +66,23 @@ export default async function DashboardPage() {
   const prevLucro = prevFaturamento - prevDespesas
   const prevMargem = prevFaturamento > 0 ? (prevLucro / prevFaturamento) * 100 : 0
 
-  // 8. Calculations for growth metrics
   const fatGrowth = prevFaturamento > 0 ? ((faturamento - prevFaturamento) / prevFaturamento) * 100 : 0
-  const despGrowth = prevDespesas > 0 ? ((despesas - prevDespesas) / prevDespesas) * 100 : 0
   const lucroGrowth = prevLucro !== 0 ? ((lucro - prevLucro) / Math.abs(prevLucro)) * 100 : 0
 
-  // 9. Prepare Chart Data (6 months historical grouping)
   const monthsList = [5, 4, 3, 2, 1, 0].map(m => {
     const d = subMonths(now, m)
     const yearMonth = format(d, 'yyyy-MM')
-    
-    // Label translations
     const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
     const label = months[d.getMonth()] + ' ' + format(d, 'yy')
-
-    return {
-      key: yearMonth,
-      name: label,
-      Entradas: 0,
-      Saídas: 0,
-    }
+    return { key: yearMonth, name: label, Entradas: 0, Saídas: 0 }
   })
 
   chartTransactions?.forEach(tx => {
     const monthKey = tx.date.substring(0, 7)
     const monthObj = monthsList.find(m => m.key === monthKey)
     if (monthObj) {
-      if (tx.type === 'income') {
-        monthObj.Entradas += Number(tx.amount)
-      } else {
-        monthObj.Saídas += Number(tx.amount)
-      }
+      if (tx.type === 'income') monthObj.Entradas += Number(tx.amount)
+      else monthObj.Saídas += Number(tx.amount)
     }
   })
 
@@ -135,235 +93,205 @@ export default async function DashboardPage() {
     Lucro: m.Entradas - m.Saídas
   }))
 
-  // 10. Generate Smart Insights
-  const insights = generateInsights({
-    faturamento,
-    despesas,
-    lucro,
-    margem,
-    prevFaturamento,
-    prevDespesas,
-    prevLucro,
-    prevMargem
-  })
+  const insights = generateInsights({ faturamento, despesas, lucro, margem, prevFaturamento, prevDespesas, prevLucro, prevMargem })
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10 font-jakarta">
       {/* Header Area */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-black tracking-tight">Painel Principal</h1>
-          <p className="text-slate-400 text-sm mt-1">Acompanhamento de fluxo de caixa e rentabilidade da sua empresa.</p>
+          <h1 className="text-3xl font-extrabold text-on-surface tracking-tight font-display-hero">Painel de Gestão</h1>
+          <p className="text-on-surface-variant text-sm mt-1 font-medium italic">Visão consolidada da performance da sua empresa.</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           <Link href="/dashboard/import">
-            <Button variant="outline" className="border-slate-800 hover:bg-slate-900 text-slate-300 font-semibold gap-2 rounded-xl py-5">
-              <Upload className="h-4 w-4" />
+            <button className="bg-white text-primary border border-outline-variant/30 font-bold px-6 py-3.5 rounded-2xl flex items-center gap-2 hover:bg-surface-container transition-all active:scale-95 shadow-sm">
+              <span className="material-symbols-outlined text-[20px]">upload_file</span>
               <span>Importar Extrato</span>
-            </Button>
+            </button>
           </Link>
           <Link href="/dashboard/transactions?new=true">
-            <Button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold gap-2 rounded-xl py-5 shadow-lg shadow-emerald-500/10">
-              <Plus className="h-4 w-4 text-slate-950" />
-              <span>Nova Transação</span>
-            </Button>
+            <button className="bg-primary text-on-primary font-bold px-6 py-3.5 rounded-2xl flex items-center gap-2 hover:bg-primary-container transition-all active:scale-95 shadow-lg shadow-primary/20">
+              <span className="material-symbols-outlined text-[20px]">add_circle</span>
+              <span>Lançar Transação</span>
+            </button>
           </Link>
         </div>
       </div>
 
       {/* KPI Metrics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Card 1: Faturamento */}
-        <Card className="bg-slate-900 border-slate-850 text-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-bold text-slate-400 uppercase tracking-wider">Faturamento (Entradas)</CardTitle>
-            <TrendingUp className="h-4 w-4 text-emerald-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black">{formatCurrency(faturamento)}</div>
-            <p className="text-xs text-slate-450 mt-1 flex items-center gap-1">
-              {fatGrowth >= 0 ? (
-                <span className="text-emerald-400 font-semibold flex items-center">
-                  <ArrowUpRight className="h-3 w-3" />
-                  {fatGrowth.toFixed(1)}%
-                </span>
-              ) : (
-                <span className="text-red-400 font-semibold flex items-center">
-                  <ArrowDownRight className="h-3 w-3" />
-                  {Math.abs(fatGrowth).toFixed(1)}%
-                </span>
-              )}
-              <span className="text-slate-500">desde o mês anterior</span>
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Card 2: Despesas */}
-        <Card className="bg-slate-900 border-slate-850 text-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-bold text-slate-400 uppercase tracking-wider">Despesas (Saídas)</CardTitle>
-            <Receipt className="h-4 w-4 text-red-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black">{formatCurrency(despesas)}</div>
-            <p className="text-xs text-slate-450 mt-1 flex items-center gap-1">
-              {despGrowth <= 0 ? (
-                <span className="text-emerald-400 font-semibold flex items-center">
-                  <ArrowDownRight className="h-3 w-3" />
-                  {Math.abs(despGrowth).toFixed(1)}%
-                </span>
-              ) : (
-                <span className="text-red-400 font-semibold flex items-center">
-                  <ArrowUpRight className="h-3 w-3" />
-                  {despGrowth.toFixed(1)}%
-                </span>
-              )}
-              <span className="text-slate-500">em relação ao mês passado</span>
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Card 3: Lucro */}
-        <Card className="bg-slate-900 border-slate-850 text-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-bold text-slate-400 uppercase tracking-wider">Lucro Líquido</CardTitle>
-            <DollarSign className="h-4 w-4 text-blue-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black">{formatCurrency(lucro)}</div>
-            <p className="text-xs text-slate-450 mt-1 flex items-center gap-1">
-              {lucroGrowth >= 0 ? (
-                <span className="text-emerald-400 font-semibold flex items-center">
-                  <ArrowUpRight className="h-3 w-3" />
-                  {lucroGrowth.toFixed(1)}%
-                </span>
-              ) : (
-                <span className="text-red-400 font-semibold flex items-center">
-                  <ArrowDownRight className="h-3 w-3" />
-                  {Math.abs(lucroGrowth).toFixed(1)}%
-                </span>
-              )}
-              <span className="text-slate-500">desde o mês passado</span>
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Card 4: Margem */}
-        <Card className="bg-slate-900 border-slate-850 text-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-bold text-slate-400 uppercase tracking-wider">Margem de Lucro</CardTitle>
-            <PieChart className="h-4 w-4 text-purple-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black">{margem.toFixed(1)}%</div>
-            <p className="text-xs text-slate-450 mt-1 flex items-center gap-1">
-              <span className="font-semibold text-slate-350">{prevMargem.toFixed(1)}% no mês anterior</span>
-            </p>
-          </CardContent>
-        </Card>
+        <KPICard 
+          title="Faturamento" 
+          value={formatCurrency(faturamento)} 
+          growth={fatGrowth} 
+          icon="payments" 
+          color="primary"
+        />
+        <KPICard 
+          title="Despesas" 
+          value={formatCurrency(despesas)} 
+          icon="receipt_long" 
+          color="error"
+        />
+        <KPICard 
+          title="Lucro Líquido" 
+          value={formatCurrency(lucro)} 
+          growth={lucroGrowth} 
+          icon="trending_up" 
+          color="tertiary"
+        />
+        <KPICard 
+          title="Margem de Lucro" 
+          value={`${margem.toFixed(1)}%`} 
+          subtitle={`${prevMargem.toFixed(1)}% no mês anterior`} 
+          icon="pie_chart" 
+          color="primary"
+        />
       </div>
 
-      {/* Recharts Charts Layout */}
-      <DashboardCharts data={chartData} />
-
-      {/* Bottom Grid: Insights & Recent Transactions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Insights (Left Column) */}
-        <div className="lg:col-span-1 space-y-4">
-          <h3 className="text-lg font-bold flex items-center gap-2">
-            <Activity className="h-5 w-5 text-emerald-400" />
-            CaixaUp Insights
-          </h3>
-          
-          <div className="space-y-4">
-            {insights.map((insight, idx) => {
-              const iconMap = {
-                success: <CheckCircle className="h-5 w-5 text-emerald-400 flex-shrink-0 mt-0.5" />,
-                warning: <AlertTriangle className="h-5 w-5 text-orange-400 flex-shrink-0 mt-0.5" />,
-                danger: <AlertTriangle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />,
-                info: <Info className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-              }
-
-              const bgMap = {
-                success: 'bg-emerald-500/5 border-emerald-500/10',
-                warning: 'bg-orange-500/5 border-orange-500/10',
-                danger: 'bg-red-500/5 border-red-500/10',
-                info: 'bg-blue-500/5 border-blue-500/10'
-              }
-
-              return (
-                <div 
-                  key={idx} 
-                  className={`p-4 border rounded-2xl flex gap-3 ${bgMap[insight.type]}`}
-                >
-                  {iconMap[insight.type]}
-                  <div>
-                    <h4 className="text-sm font-bold">{insight.title}</h4>
-                    <p className="text-slate-400 text-xs mt-1 leading-relaxed">{insight.description}</p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Recent Transactions (Right Column) */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-bold">Últimos Lançamentos</h3>
-            <Link href="/dashboard/transactions" className="text-xs text-emerald-450 hover:text-emerald-400 transition font-semibold">
-              Ver todas as transações
-            </Link>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Charts Section */}
+        <div className="lg:col-span-2 space-y-8">
+          <div className="bg-white border border-outline-variant/20 rounded-[2.5rem] p-8 shadow-sm">
+            <div className="flex items-center justify-between mb-8 pb-6 border-b border-outline-variant/10">
+              <h3 className="text-lg font-bold text-on-surface flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary">analytics</span>
+                Fluxo de Caixa Mensal
+              </h3>
+            </div>
+            <DashboardCharts data={chartData} />
           </div>
 
-          <Card className="bg-slate-900 border-slate-850 text-white">
-            <CardContent className="p-0">
+          {/* Recent Transactions List */}
+          <div className="bg-white border border-outline-variant/20 rounded-[2.5rem] p-8 shadow-sm">
+            <div className="flex justify-between items-center mb-8 pb-6 border-b border-outline-variant/10">
+              <h3 className="text-lg font-bold text-on-surface flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary">history</span>
+                Lançamentos Recentes
+              </h3>
+              <Link href="/dashboard/transactions" className="text-xs text-primary hover:underline font-bold uppercase tracking-widest">
+                Ver Todos
+              </Link>
+            </div>
+
+            <div className="space-y-1">
               {recentTransactions && recentTransactions.length > 0 ? (
-                <div className="divide-y divide-slate-800">
-                  {recentTransactions.map((tx) => {
-                    const isIncome = tx.type === 'income'
-                    return (
-                      <div key={tx.id} className="p-4 flex items-center justify-between hover:bg-slate-850/50 transition">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className={`h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                            isIncome ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
-                          }`}>
-                            <span className="font-bold text-sm">
-                              {isIncome ? '+' : '-'}
-                            </span>
-                          </div>
-                          <div className="min-w-0">
-                            <span className="font-bold text-sm text-slate-200 block truncate">{tx.description}</span>
-                            <span className="text-[10px] text-slate-500 block">
-                              {tx.categories?.name || 'Sem Categoria'} • {format(new Date(tx.date + 'T12:00:00'), 'dd/MM/yyyy')}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <span className={`font-black text-sm block ${
-                            isIncome ? 'text-emerald-400' : 'text-slate-250'
-                          }`}>
-                            {isIncome ? '+' : '-'} {formatCurrency(Number(tx.amount))}
-                          </span>
-                          <span className="text-[10px] text-slate-500 uppercase font-semibold">
-                            {tx.payment_method}
-                          </span>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
+                recentTransactions.map((tx) => (
+                  <TransactionRow key={tx.id} tx={tx} />
+                ))
               ) : (
-                <div className="p-12 text-center text-slate-500">
-                  <Receipt className="mx-auto h-8 w-8 text-slate-650 mb-3" />
-                  <p className="text-sm">Nenhuma transação cadastrada ainda.</p>
-                  <p className="text-xs text-slate-600 mt-1">Insira suas receitas ou despesas para começar.</p>
+                <div className="py-12 text-center text-on-surface-variant/40">
+                   <span className="material-symbols-outlined text-[48px] block mb-2">inbox</span>
+                   <p className="text-sm font-medium">Nenhuma transação encontrada.</p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+        </div>
+
+        {/* Insights Column */}
+        <div className="lg:col-span-1 space-y-8">
+          <div className="bg-white border border-outline-variant/20 rounded-[2.5rem] p-8 shadow-sm h-full">
+            <h3 className="text-lg font-bold text-on-surface flex items-center gap-2 mb-8 pb-6 border-b border-outline-variant/10">
+              <span className="material-symbols-outlined text-primary">lightbulb</span>
+              Inteligência Financeira
+            </h3>
+            
+            <div className="space-y-6">
+              {insights.map((insight, idx) => (
+                <InsightItem key={idx} insight={insight} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+// Sub-components for better organization
+
+function KPICard({ title, value, growth, subtitle, icon, color }: any) {
+  const isPositive = growth !== undefined && growth >= 0
+  const colorClass = color === 'error' ? 'text-error' : color === 'tertiary' ? 'text-tertiary' : 'text-primary'
+  const bgClass = color === 'error' ? 'bg-error-container/20' : color === 'tertiary' ? 'bg-tertiary-container/10' : 'bg-primary/5'
+
+  return (
+    <div className="bg-white border border-outline-variant/20 p-8 rounded-[2rem] shadow-sm hover:shadow-md transition-shadow group">
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">{title}</p>
+        <div className={`h-10 w-10 rounded-xl ${bgClass} flex items-center justify-center ${colorClass} group-hover:scale-110 transition-transform`}>
+          <span className="material-symbols-outlined text-[20px]">{icon}</span>
+        </div>
+      </div>
+      <div className="space-y-1">
+        <h4 className="text-2xl font-black text-on-surface">{value}</h4>
+        {growth !== undefined && (
+          <div className={`flex items-center gap-1.5 text-[12px] font-bold ${isPositive ? 'text-tertiary' : 'text-error'}`}>
+             <span className="material-symbols-outlined text-[16px]">{isPositive ? 'trending_up' : 'trending_down'}</span>
+             <span>{Math.abs(growth).toFixed(1)}%</span>
+             <span className="text-on-surface-variant font-normal lowercase tracking-tight">vs mês anterior</span>
+          </div>
+        )}
+        {subtitle && <p className="text-[12px] text-on-surface-variant font-medium">{subtitle}</p>}
+      </div>
+    </div>
+  )
+}
+
+function TransactionRow({ tx }: any) {
+  const isIncome = tx.type === 'income'
+  return (
+    <div className="flex items-center justify-between p-4 rounded-2xl hover:bg-surface-container-low transition-colors group">
+      <div className="flex items-center gap-4 min-w-0">
+        <div className={`h-11 w-11 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+          isIncome ? 'bg-tertiary-container/10 text-tertiary' : 'bg-surface-container-high text-on-surface-variant'
+        }`}>
+          <span className="material-symbols-outlined text-[20px]">
+            {isIncome ? 'arrow_upward' : 'arrow_downward'}
+          </span>
+        </div>
+        <div className="min-w-0">
+          <span className="font-bold text-sm text-on-surface block truncate">{tx.description}</span>
+          <span className="text-[11px] text-on-surface-variant font-medium block">
+            {tx.categories?.name || 'Sem Categoria'} • {format(new Date(tx.date + 'T12:00:00'), 'dd/MM/yyyy')}
+          </span>
+        </div>
+      </div>
+      <div className="text-right ml-4">
+        <span className={`font-black text-sm block ${isIncome ? 'text-tertiary' : 'text-on-surface'}`}>
+          {isIncome ? '+' : '-'} {formatCurrency(Number(tx.amount))}
+        </span>
+        <span className="text-[10px] text-on-surface-variant uppercase font-bold tracking-wider">{tx.payment_method}</span>
+      </div>
+    </div>
+  )
+}
+
+function InsightItem({ insight }: any) {
+  const colorMap: any = {
+    success: 'text-tertiary bg-tertiary-container/10 border-tertiary/10',
+    warning: 'text-orange-500 bg-orange-500/10 border-orange-500/10',
+    danger: 'text-error bg-error-container/20 border-error/10',
+    info: 'text-primary bg-primary/5 border-primary/10'
+  }
+  
+  const iconMap: any = {
+    success: 'check_circle',
+    warning: 'warning',
+    danger: 'dangerous',
+    info: 'info'
+  }
+
+  return (
+    <div className={`p-5 rounded-[1.5rem] border ${colorMap[insight.type]} space-y-2`}>
+      <div className="flex items-center gap-2">
+        <span className="material-symbols-outlined text-[18px]">{iconMap[insight.type]}</span>
+        <h4 className="text-xs font-bold uppercase tracking-wider">{insight.title}</h4>
+      </div>
+      <p className="text-xs font-medium leading-relaxed opacity-80">{insight.description}</p>
     </div>
   )
 }

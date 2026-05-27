@@ -33,14 +33,14 @@ export default async function DashboardLayout({
   const userName = profile.full_name || profile.email
 
   return (
-    <div className="flex bg-slate-950 min-h-screen">
+    <div className="flex bg-surface min-h-screen font-jakarta">
       <SidebarNav companyName={companyName} userName={userName} />
-      <main className="flex-1 overflow-y-auto max-h-screen text-slate-100 bg-slate-950">
+      <main className="flex-1 overflow-y-auto max-h-screen text-on-surface bg-surface">
         <div className="p-8 max-w-7xl mx-auto space-y-8">
           {children}
         </div>
       </main>
-      <Toaster position="top-right" theme="dark" />
+      <Toaster position="top-right" theme="light" />
     </div>
   )
 }

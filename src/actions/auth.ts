@@ -18,32 +18,31 @@ export async function login(state: ActionState, formData: FormData): Promise<Act
     return { error: 'Preencha todos os campos.' }
   }
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data: signInData, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   })
 
   if (error) {
-    return { error: error.message }
+    return { error: 'E-mail ou senha inválidos.' }
   }
 
-  // Retrieve user & profile to redirect accordingly
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = signInData.user
   if (user) {
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('company_id')
       .eq('id', user.id)
       .single()
 
-    if (profile?.company_id) {
+    if (!profileError && profile?.company_id) {
       redirect('/dashboard')
     } else {
       redirect('/onboarding')
     }
   }
 
-  redirect('/dashboard')
+  return { error: 'Falha ao recuperar informações do usuário.' }
 }
 
 export async function signup(state: ActionState, formData: FormData): Promise<ActionState> {
