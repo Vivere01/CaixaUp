@@ -39,7 +39,7 @@ export default async function ImportPage() {
   return (
     <ImportClient 
       categories={categories || []} 
-      hasPhysicalStores={profile.companies?.has_physical_stores || false}
+      hasPhysicalStores={(profile.companies as any)?.has_physical_stores || false}
       stores={stores || []}
     />
   )

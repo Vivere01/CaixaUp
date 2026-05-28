@@ -30,9 +30,9 @@ export default async function DashboardLayout({
     redirect('/onboarding')
   }
 
-  const companyName = profile.companies?.name || 'Sua Empresa'
+  const companyName = (profile.companies as any)?.name || 'Sua Empresa'
   const userName = profile.full_name || profile.email
-  const hasPhysicalStores = profile.companies?.has_physical_stores || false
+  const hasPhysicalStores = (profile.companies as any)?.has_physical_stores || false
 
   return (
     <div className="flex flex-col lg:flex-row bg-surface min-h-screen font-jakarta">

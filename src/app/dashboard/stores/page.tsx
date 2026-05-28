@@ -18,7 +18,7 @@ export default async function StoreReportsPage() {
     .single()
 
   if (!profile?.company_id) redirect('/onboarding')
-  if (!profile.companies?.has_physical_stores) {
+  if (!(profile.companies as any)?.has_physical_stores) {
     // If company doesn't have physical stores, redirect to dashboard or show info
     redirect('/dashboard')
   }
