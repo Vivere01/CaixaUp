@@ -32,11 +32,12 @@ export default async function DashboardLayout({
 
   const companyName = profile.companies?.name || 'Sua Empresa'
   const userName = profile.full_name || profile.email
+  const hasPhysicalStores = profile.companies?.has_physical_stores || false
 
   return (
     <div className="flex flex-col lg:flex-row bg-surface min-h-screen font-jakarta">
-      <SidebarNav companyName={companyName} userName={userName} />
-      <MobileNav companyName={companyName} userName={userName} />
+      <SidebarNav companyName={companyName} userName={userName} hasPhysicalStores={hasPhysicalStores} />
+      <MobileNav companyName={companyName} userName={userName} hasPhysicalStores={hasPhysicalStores} />
       
       <main className="flex-1 overflow-y-auto max-h-screen text-on-surface bg-surface">
         <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 md:space-y-8">

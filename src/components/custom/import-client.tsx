@@ -24,6 +24,8 @@ interface Category {
 
 interface ImportClientProps {
   categories: Category[]
+  hasPhysicalStores?: boolean
+  stores?: { id: string, name: string }[]
 }
 
 interface ParsedRow {
@@ -39,9 +41,10 @@ interface TransactionItem {
   payment_method: string
   status: 'paid' | 'pending'
   notes: string
+  store_id: string | null
 }
 
-export function ImportClient({ categories }: ImportClientProps) {
+export function ImportClient({ categories, hasPhysicalStores, stores }: ImportClientProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [file, setFile] = useState<File | null>(null)
@@ -51,6 +54,8 @@ export function ImportClient({ categories }: ImportClientProps) {
   const [descCol, setDescCol] = useState('')
   const [amountCol, setAmountCol] = useState('')
   const [dateCol, setDateCol] = useState('')
+  const [paymentMethodCol, setPaymentMethodCol] = useState('')
+  const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null)
   const [defaultType, setDefaultType] = useState<'income' | 'expense' | 'deduce'>('deduce')
   const [itemsToImport, setItemsToImport] = useState<TransactionItem[]>([])
 
@@ -72,17 +77,45 @@ export function ImportClient({ categories }: ImportClientProps) {
   }
 
   const autoDetectHeaders = (hList: string[]) => {
-    const dM = ['descricao', 'description', 'historico']; const vM = ['valor', 'amount', 'total']; const dtM = ['data', 'date']
+    const dM = ['descricao', 'description', 'historico', 'detalhe']; 
+    const vM = ['valor', 'amount', 'total', 'quantia']; 
+    const dtM = ['data', 'date', 'vencimento'];
+    const pmM = ['pagamento', 'payment', 'meio', 'forma'];
+
     hList.forEach(h => {
       const n = h.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      if (dM.includes(n) && !descCol) setDescCol(h); if (vM.includes(n) && !amountCol) setAmountCol(h); if (dtM.includes(n) && !dateCol) setDateCol(h)
+      if (dM.some(m => n.includes(m)) && !descCol) setDescCol(h)
+      if (vM.some(m => n.includes(m)) && !amountCol) setAmountCol(h)
+      if (dtM.some(m => n.includes(m)) && !dateCol) setDateCol(h)
+      if (pmM.some(m => n.includes(m)) && !paymentMethodCol) setPaymentMethodCol(h)
     })
   }
 
   const parseDate = (val: string): string => {
     if (!val) return format(new Date(), 'yyyy-MM-dd')
-    const parts = val.split('/'); if (parts.length === 3) return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`
-    return val.substring(0, 10)
+    const clean = val.trim()
+    // Handle DD/MM/YYYY
+    const parts = clean.split('/'); 
+    if (parts.length === 3) {
+      const day = parts[0].padStart(2, '0')
+      const month = parts[1].padStart(2, '0')
+      let year = parts[2]
+      if (year.length === 2) year = `20${year}`
+      return `${year}-${month}-${day}`
+    }
+    // Handle YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}/.test(clean)) return clean.substring(0, 10)
+    // Handle Excel serial date or other garbage
+    return format(new Date(), 'yyyy-MM-dd')
+  }
+
+  const mapPaymentMethod = (val: string): string => {
+    const n = val.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    if (n.includes('pix')) return 'pix'
+    if (n.includes('credito') || n.includes('cartao') || n.includes('credit')) return 'credit_card'
+    if (n.includes('boleto') || n.includes('slip')) return 'bank_slip'
+    if (n.includes('dinheiro') || n.includes('especie') || n.includes('cash')) return 'cash'
+    return 'other'
   }
 
   const handleMapConfirm = () => {
@@ -93,11 +126,31 @@ export function ImportClient({ categories }: ImportClientProps) {
       if (defaultType === 'income') type = 'income'
       else if (defaultType === 'expense') type = 'expense'
       else { if (val > 0) type = 'income'; else { type = 'expense'; val = Math.abs(val) } }
-      const desc = String(row[descCol]).toLowerCase()
+      
+      const desc = String(row[descCol] || '').toLowerCase()
       const cat = categories.find(c => c.type === type && (desc.includes(c.name.toLowerCase()) || c.name.toLowerCase().includes(desc)))
-      return { description: String(row[descCol] || 'Importado'), amount: val, type, category_id: cat?.id || null, date: parseDate(String(row[dateCol])), payment_method: 'other', status: 'paid', notes: `Importado: ${file?.name}` }
+      
+      const rawPM = paymentMethodCol ? String(row[paymentMethodCol] || 'other') : 'other'
+      
+      return { 
+        description: String(row[descCol] || 'Importado'), 
+        amount: val, 
+        type, 
+        category_id: cat?.id || null, 
+        date: parseDate(String(row[dateCol])), 
+        payment_method: mapPaymentMethod(rawPM), 
+        status: 'paid', 
+        notes: `Importado: ${file?.name}`,
+        store_id: selectedStoreId
+      }
     })
     setItemsToImport(mapped); setStep(3)
+  }
+
+  const handleUpdateItem = (idx: number, field: keyof TransactionItem, value: any) => {
+    const newItems = [...itemsToImport]
+    newItems[idx] = { ...newItems[idx], [field]: value }
+    setItemsToImport(newItems)
   }
 
   const handleImportSave = () => {
@@ -138,11 +191,25 @@ export function ImportClient({ categories }: ImportClientProps) {
                 <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary flex-shrink-0"><span className="material-symbols-outlined">map</span></div>
                 <div><h3 className="text-base md:text-lg font-bold">Mapeamento de Colunas</h3><p className="text-[10px] md:text-xs text-on-surface-variant font-medium">Identifique quais colunas representam cada dado no CaixaUp.</p></div>
              </div>
-             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 md:gap-6">
                 <div className="space-y-2"><Label className="font-bold ml-1 text-[10px] md:text-xs uppercase tracking-wider opacity-60">Descrição</Label><Select value={descCol} onValueChange={(v) => setDescCol(v || '')}><SelectTrigger className="rounded-xl py-6 bg-surface"><SelectValue /></SelectTrigger><SelectContent>{headers.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent></Select></div>
                 <div className="space-y-2"><Label className="font-bold ml-1 text-[10px] md:text-xs uppercase tracking-wider opacity-60">Valor</Label><Select value={amountCol} onValueChange={(v) => setAmountCol(v || '')}><SelectTrigger className="rounded-xl py-6 bg-surface"><SelectValue /></SelectTrigger><SelectContent>{headers.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent></Select></div>
                 <div className="space-y-2"><Label className="font-bold ml-1 text-[10px] md:text-xs uppercase tracking-wider opacity-60">Data</Label><Select value={dateCol} onValueChange={(v) => setDateCol(v || '')}><SelectTrigger className="rounded-xl py-6 bg-surface"><SelectValue /></SelectTrigger><SelectContent>{headers.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent></Select></div>
+                <div className="space-y-2"><Label className="font-bold ml-1 text-[10px] md:text-xs uppercase tracking-wider opacity-60">Meio de Pagamento</Label><Select value={paymentMethodCol} onValueChange={(v) => setPaymentMethodCol(v || '')}><SelectTrigger className="rounded-xl py-6 bg-surface"><SelectValue placeholder="Opcional" /></SelectTrigger><SelectContent>{headers.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent></Select></div>
              </div>
+
+             {hasPhysicalStores && stores && (
+                <div className="space-y-3 p-5 md:p-6 bg-surface rounded-3xl border border-outline-variant/10">
+                  <Label className="font-bold text-[10px] md:text-xs uppercase tracking-wider opacity-60 ml-1">Vincular a qual Loja/Unidade?</Label>
+                  <Select value={selectedStoreId || 'none'} onValueChange={(v) => setSelectedStoreId(v === 'none' ? null : v)}>
+                    <SelectTrigger className="rounded-xl py-6 bg-white border-none shadow-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Geral (Sem Loja Específica)</SelectItem>
+                      {stores.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+             )}
              <div className="space-y-3 p-5 md:p-6 bg-surface rounded-3xl border border-outline-variant/10">
                 <Label className="font-bold text-[10px] md:text-xs uppercase tracking-wider opacity-60 ml-1">Como tratar a natureza da transação?</Label>
                 <Select value={defaultType} onValueChange={(v: any) => setDefaultType(v || 'deduce')}><SelectTrigger className="rounded-xl py-6 bg-white border-none shadow-sm"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="deduce">Deduzir pelo sinal (+/-)</SelectItem><SelectItem value="expense">Tratar tudo como Despesa</SelectItem><SelectItem value="income">Tratar tudo como Receita</SelectItem></SelectContent></Select>
@@ -162,7 +229,51 @@ export function ImportClient({ categories }: ImportClientProps) {
              </div>
              <div className="border border-outline-variant/10 rounded-2xl md:rounded-[2rem] overflow-hidden">
                 <div className="overflow-x-auto">
-                  <Table><TableHeader className="bg-surface"><TableRow className="border-none"><TableHead className="font-bold text-on-surface px-6">Descrição</TableHead><TableHead className="font-bold text-on-surface">Valor</TableHead><TableHead className="font-bold text-on-surface">Data</TableHead><TableHead className="font-bold text-on-surface">Categoria</TableHead></TableRow></TableHeader><TableBody>{itemsToImport.map((item, idx) => (<TableRow key={idx} className="border-outline-variant/5"><TableCell className="px-6 py-4 font-bold text-on-surface text-xs whitespace-nowrap md:whitespace-normal">{item.description}</TableCell><TableCell className={`font-black text-xs whitespace-nowrap ${item.type === 'income' ? 'text-tertiary' : 'text-on-surface'}`}>{item.type === 'income' ? '+' : '-'} {formatCurrency(item.amount)}</TableCell><TableCell className="text-xs font-medium opacity-60 whitespace-nowrap">{item.date.split('-').reverse().join('/')}</TableCell><TableCell><span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-surface-container-high rounded-full whitespace-nowrap">{categories.find(c => c.id === item.category_id)?.name || 'Sem Categoria'}</span></TableCell></TableRow>))}</TableBody></Table>
+                  <Table>
+                    <TableHeader className="bg-surface">
+                      <TableRow className="border-none">
+                        <TableHead className="font-bold text-on-surface px-6">Descrição</TableHead>
+                        <TableHead className="font-bold text-on-surface">Valor</TableHead>
+                        <TableHead className="font-bold text-on-surface">Data</TableHead>
+                        <TableHead className="font-bold text-on-surface">Meio</TableHead>
+                        <TableHead className="font-bold text-on-surface">Categoria</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {itemsToImport.map((item, idx) => (
+                        <TableRow key={idx} className="border-outline-variant/5">
+                          <TableCell className="px-6 py-4 font-bold text-on-surface text-xs whitespace-nowrap md:whitespace-normal">{item.description}</TableCell>
+                          <TableCell className={`font-black text-xs whitespace-nowrap ${item.type === 'income' ? 'text-tertiary' : 'text-on-surface'}`}>{item.type === 'income' ? '+' : '-'} {formatCurrency(item.amount)}</TableCell>
+                          <TableCell className="text-xs font-medium opacity-60 whitespace-nowrap">{item.date.split('-').reverse().join('/')}</TableCell>
+                          <TableCell>
+                            <Select value={item.payment_method} onValueChange={(v) => handleUpdateItem(idx, 'payment_method', v)}>
+                              <SelectTrigger className="h-8 text-[10px] w-28 bg-surface border-none"><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="pix">PIX</SelectItem>
+                                <SelectItem value="credit_card">Cartão de Crédito</SelectItem>
+                                <SelectItem value="bank_slip">Boleto</SelectItem>
+                                <SelectItem value="cash">Dinheiro</SelectItem>
+                                <SelectItem value="other">Outro</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell>
+                            <Select value={item.category_id || 'none'} onValueChange={(v) => handleUpdateItem(idx, 'category_id', v === 'none' ? null : v)}>
+                              <SelectTrigger className="h-8 text-[10px] w-40 bg-surface border-none">
+                                <SelectValue placeholder="Sem Categoria" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="none">Sem Categoria</SelectItem>
+                                {categories.filter(c => c.type === item.type).map(cat => (
+                                  <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
              </div>
           </div>

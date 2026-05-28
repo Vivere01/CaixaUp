@@ -75,9 +75,19 @@ export default function OnboardingPage() {
                   className="pl-12 py-6 bg-surface-container-lowest border-outline-variant/30 text-on-surface placeholder-outline focus:border-primary focus:ring-primary/20 rounded-2xl transition-all"
                 />
               </div>
-              <p className="text-[11px] text-on-surface-variant font-medium mt-2 px-1">
-                Este nome será usado para gerar seus relatórios, notas e filtros de DRE.
-              </p>
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl">
+              <div className="space-y-0.5">
+                <Label htmlFor="hasPhysicalStores" className="text-sm font-bold">Possui lojas físicas?</Label>
+                <p className="text-[10px] text-on-surface-variant font-medium">Ative para gerenciar entradas e saídas por unidade.</p>
+              </div>
+              <input 
+                type="checkbox" 
+                id="hasPhysicalStores" 
+                name="hasPhysicalStores"
+                className="w-10 h-5 bg-outline-variant/30 rounded-full appearance-none relative cursor-pointer before:content-[''] before:absolute before:w-4 before:h-4 before:bg-white before:rounded-full before:top-0.5 before:left-0.5 before:transition-all checked:bg-primary checked:before:left-5"
+              />
             </div>
 
             {/* List of automatic features configured during onboarding */}

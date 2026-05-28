@@ -12,10 +12,10 @@ export default async function ImportPage() {
     redirect('/login')
   }
 
-  // Fetch profile to resolve company_id
+  // Fetch profile to resolve company_id and physical store status
   const { data: profile } = await supabase
     .from('profiles')
-    .select('company_id')
+    .select('company_id, companies(has_physical_stores)')
     .eq('id', user.id)
     .single()
 
@@ -30,7 +30,17 @@ export default async function ImportPage() {
     .eq('company_id', profile.company_id)
     .order('name', { ascending: true })
 
+  // Fetch stores if applicable
+  const { data: stores } = await supabase
+    .from('stores')
+    .select('id, name')
+    .eq('company_id', profile.company_id)
+
   return (
-    <ImportClient categories={categories || []} />
+    <ImportClient 
+      categories={categories || []} 
+      hasPhysicalStores={profile.companies?.has_physical_stores || false}
+      stores={stores || []}
+    />
   )
 }

@@ -2,6 +2,7 @@
 
 import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 
 export interface ActionState {
   error?: string
@@ -83,6 +84,8 @@ export async function createCompany(state: ActionState, formData: FormData): Pro
   const supabase = await createClient()
 
   const companyName = formData.get('companyName') as string
+  const hasPhysicalStores = formData.get('hasPhysicalStores') === 'on'
+
   if (!companyName) {
     return { error: 'O nome da empresa é obrigatório.' }
   }
@@ -109,6 +112,7 @@ export async function createCompany(state: ActionState, formData: FormData): Pro
     .insert({
       name: companyName,
       slug,
+      has_physical_stores: hasPhysicalStores,
     })
     .select()
     .single()
@@ -123,6 +127,7 @@ export async function createCompany(state: ActionState, formData: FormData): Pro
         .insert({
           name: companyName,
           slug,
+          has_physical_stores: hasPhysicalStores,
         })
         .select()
         .single()
@@ -139,6 +144,13 @@ export async function createCompany(state: ActionState, formData: FormData): Pro
         .eq('id', user.id)
 
       if (profileError) return { error: profileError.message }
+      
+      revalidatePath('/', 'layout')
+      revalidatePath('/dashboard', 'layout')
+      
+      if (hasPhysicalStores) {
+        redirect('/onboarding/stores')
+      }
       redirect('/dashboard')
     }
     return { error: companyError.message }
@@ -157,5 +169,11 @@ export async function createCompany(state: ActionState, formData: FormData): Pro
     return { error: profileError.message }
   }
 
+  revalidatePath('/', 'layout')
+  revalidatePath('/dashboard', 'layout')
+  
+  if (hasPhysicalStores) {
+    redirect('/onboarding/stores')
+  }
   redirect('/dashboard')
 }

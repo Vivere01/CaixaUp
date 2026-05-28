@@ -13,6 +13,7 @@ export async function createTransaction(data: {
   status: 'paid' | 'pending'
   notes?: string
   cost_center?: 'fixed' | 'variable'
+  store_id?: string | null
 }) {
   const supabase = await createClient()
 
@@ -40,6 +41,7 @@ export async function createTransaction(data: {
       status: data.status,
       notes: data.notes || '',
       cost_center: data.cost_center || 'variable',
+      store_id: data.store_id || null,
     })
 
   if (error) return { error: error.message }
@@ -111,6 +113,7 @@ export async function bulkCreateTransactions(transactions: {
   payment_method: string
   status: 'paid' | 'pending'
   notes?: string
+  store_id?: string | null
 }[]) {
   const supabase = await createClient()
 
@@ -135,6 +138,7 @@ export async function bulkCreateTransactions(transactions: {
     payment_method: tx.payment_method || 'other',
     status: tx.status || 'paid',
     notes: tx.notes || '',
+    store_id: tx.store_id || null,
   }))
 
   const { error } = await supabase

@@ -10,9 +10,10 @@ import { Button } from '@/components/ui/button'
 interface MobileNavProps {
   companyName: string
   userName: string
+  hasPhysicalStores?: boolean
 }
 
-export function MobileNav({ companyName, userName }: MobileNavProps) {
+export function MobileNav({ companyName, userName, hasPhysicalStores }: MobileNavProps) {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
 
@@ -22,6 +23,7 @@ export function MobileNav({ companyName, userName }: MobileNavProps) {
     { name: 'Categorias', href: '/dashboard/categories', icon: 'sell' },
     { name: 'Importar', href: '/dashboard/import', icon: 'upload_file' },
     { name: 'Relatório DRE', href: '/dashboard/dre', icon: 'analytics' },
+    ...(hasPhysicalStores ? [{ name: 'Lojas', href: '/dashboard/stores', icon: 'storefront' }] : []),
   ]
 
   return (

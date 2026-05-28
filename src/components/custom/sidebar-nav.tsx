@@ -19,9 +19,10 @@ import { Button } from '@/components/ui/button'
 interface SidebarNavProps {
   companyName: string
   userName: string
+  hasPhysicalStores?: boolean
 }
 
-export function SidebarNav({ companyName, userName }: SidebarNavProps) {
+export function SidebarNav({ companyName, userName, hasPhysicalStores }: SidebarNavProps) {
   const pathname = usePathname()
   const [isClearOpen, setIsClearOpen] = React.useState(false)
 
@@ -31,6 +32,7 @@ export function SidebarNav({ companyName, userName }: SidebarNavProps) {
     { name: 'Categorias', href: '/dashboard/categories', icon: 'sell' },
     { name: 'Importar', href: '/dashboard/import', icon: 'upload_file' },
     { name: 'Relatório DRE', href: '/dashboard/dre', icon: 'analytics' },
+    ...(hasPhysicalStores ? [{ name: 'Lojas', href: '/dashboard/stores', icon: 'storefront' }] : []),
   ]
 
   const handleClearData = async () => {
