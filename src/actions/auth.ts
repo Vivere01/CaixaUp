@@ -81,45 +81,49 @@ export async function signOut() {
 }
 
 export async function createCompany(state: ActionState, formData: FormData): Promise<ActionState> {
-  const supabase = await createClient()
+  try {
+    const supabase = await createClient()
 
-  const companyName = formData.get('companyName') as string
-  const hasPhysicalStores = formData.get('hasPhysicalStores') === 'on'
+    const companyName = formData.get('companyName') as string
+    const hasPhysicalStores = formData.get('hasPhysicalStores') === 'on'
 
-  if (!companyName) {
-    return { error: 'O nome da empresa é obrigatório.' }
-  }
+    if (!companyName) {
+      return { error: 'O nome da empresa é obrigatório.' }
+    }
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { error: 'Usuário não autenticado.' }
-  }
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return { error: 'Usuário não autenticado.' }
+    }
 
-  const adminClient = await createAdminClient()
+    const adminClient = await createAdminClient()
 
-  // Generate unique slug
-  let slug = companyName
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+    // Generate unique slug
+    let slug = companyName
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+    
+    if (!slug) {
+      slug = `empresa-${Math.floor(1000 + Math.random() * 9000)}`
+    }
 
-  // Append random string to slug if conflicts occur, but let's do normal insertion first
-  const { data: company, error: companyError } = await adminClient
-    .from('companies')
-    .insert({
-      name: companyName,
-      slug,
-      has_physical_stores: hasPhysicalStores,
-    })
-    .select()
-    .single()
+    // Try to insert company
+    let { data: company, error: companyError } = await adminClient
+      .from('companies')
+      .insert({
+        name: companyName,
+        slug,
+        has_physical_stores: hasPhysicalStores,
+      })
+      .select()
+      .single()
 
-  if (companyError) {
-    // If slug unique violation, append random 4 char string
-    if (companyError.code === '23505') {
+    // If slug unique violation, retry once with random suffix
+    if (companyError && companyError.code === '23505') {
       const rand = Math.floor(1000 + Math.random() * 9000).toString()
       slug = `${slug}-${rand}`
       const { data: retryCompany, error: retryError } = await adminClient
@@ -132,48 +136,44 @@ export async function createCompany(state: ActionState, formData: FormData): Pro
         .select()
         .single()
 
-      if (retryError) return { error: retryError.message }
-      
-      // Update profile
-      const { error: profileError } = await adminClient
-        .from('profiles')
-        .update({
-          company_id: retryCompany.id,
-          role: 'admin',
-        })
-        .eq('id', user.id)
-
-      if (profileError) return { error: profileError.message }
-      
-      revalidatePath('/', 'layout')
-      revalidatePath('/dashboard', 'layout')
-      
-      if (hasPhysicalStores) {
-        redirect('/onboarding/stores')
-      }
-      redirect('/dashboard')
+      if (retryError) return { error: `Erro ao criar empresa (slug): ${retryError.message}` }
+      company = retryCompany
+      companyError = null
     }
-    return { error: companyError.message }
-  }
 
-  // Update profile with company_id and role = 'admin'
-  const { error: profileError } = await adminClient
-    .from('profiles')
-    .update({
-      company_id: company.id,
-      role: 'admin',
-    })
-    .eq('id', user.id)
+    if (companyError) {
+      return { error: `Erro ao criar empresa: ${companyError.message}` }
+    }
 
-  if (profileError) {
-    return { error: profileError.message }
-  }
+    if (!company) {
+      return { error: 'Falha ao criar registro da empresa. Tente novamente.' }
+    }
 
-  revalidatePath('/', 'layout')
-  revalidatePath('/dashboard', 'layout')
-  
-  if (hasPhysicalStores) {
-    redirect('/onboarding/stores')
+    // Update profile with company_id and role = 'admin'
+    const { error: profileError } = await adminClient
+      .from('profiles')
+      .update({
+        company_id: company.id,
+        role: 'admin',
+      })
+      .eq('id', user.id)
+
+    if (profileError) {
+      return { error: `Erro ao vincular perfil: ${profileError.message}` }
+    }
+
+    revalidatePath('/', 'layout')
+    revalidatePath('/dashboard', 'layout')
+    
+    if (hasPhysicalStores) {
+      redirect('/onboarding/stores')
+    }
+    redirect('/dashboard')
+  } catch (error: any) {
+    if (error.digest?.includes('NEXT_REDIRECT')) {
+      throw error
+    }
+    console.error('Create company error:', error)
+    return { error: error.message || 'Ocorreu um erro inesperado durante a configuração.' }
   }
-  redirect('/dashboard')
 }

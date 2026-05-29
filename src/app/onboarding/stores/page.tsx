@@ -1,13 +1,15 @@
 'use client'
 
 import React, { useState, useTransition } from 'react'
-import { createStore, finishStoreOnboarding } from '@/actions/stores'
+import { createStore } from '@/actions/stores'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 export default function StoresOnboardingPage() {
+  const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [storeName, setStoreName] = useState('')
   const [stores, setStores] = useState<string[]>([])
@@ -76,7 +78,7 @@ export default function StoresOnboardingPage() {
           )}
 
           <Button 
-            onClick={() => finishStoreOnboarding()} 
+            onClick={() => router.push('/dashboard')} 
             disabled={stores.length === 0}
             className="w-full bg-primary text-on-primary font-bold py-4 rounded-full shadow-lg shadow-primary/20"
           >

@@ -20,19 +20,21 @@ export default async function DashboardLayout({
   }
 
   // Fetch company/profile info
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('*, companies(*)')
     .eq('id', user.id)
     .single()
 
-  if (!profile || !profile.company_id) {
+  if (profileError || !profile || !profile.company_id) {
+    console.error('Dashboard layout profile error:', profileError)
     redirect('/onboarding')
   }
 
-  const companyName = (profile.companies as any)?.name || 'Sua Empresa'
-  const userName = profile.full_name || profile.email
-  const hasPhysicalStores = (profile.companies as any)?.has_physical_stores || false
+  const company = profile.companies as any
+  const companyName = company?.name || 'Sua Empresa'
+  const userName = profile.full_name || profile.email || 'Usuário'
+  const hasPhysicalStores = company?.has_physical_stores || false
 
   return (
     <div className="flex flex-col lg:flex-row bg-surface min-h-screen font-jakarta">
