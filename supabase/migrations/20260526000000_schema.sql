@@ -57,8 +57,8 @@ CREATE TABLE public.subscriptions (
     company_id uuid REFERENCES public.companies ON DELETE CASCADE NOT NULL,
     status text NOT NULL CHECK (status IN ('active', 'past_due', 'canceled', 'unpaid', 'trialing')),
     plan_id text NOT NULL CHECK (plan_id IN ('empresario', 'contador', 'premium')),
-    abacatepay_customer_id text,
-    abacatepay_subscription_id text,
+    stripe_customer_id text,
+    stripe_subscription_id text,
     current_period_end timestamp with time zone,
     created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
